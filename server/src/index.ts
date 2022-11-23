@@ -43,26 +43,26 @@ app.post('/login', (req: Request, res: Response) => {
   });
 
   if (!user) {
-    return res.status(404).send('User Not Found!')
+    return res.status(404).json({ status: "error", title: "Invalid Login", user: null })
   }
 
   console.log("Success!")
-  return res.status(200).json(user)
+  return res.status(200).json({ status: "success", title: "Found User!", user: user })
 });
 app.post('/signup', (req: Request, res: Response) => {
-  const { name, email, password }: User = req.body;
-  console.log(`Trying to add ${name} at ${email}`);
-  const user = users.find(user => {
-    return user.email === email
+  const newUser: User = req.body;
+  console.log(`Trying to add ${newUser.name} at ${newUser.email}`);
+  const existingUser = users.find(user => {
+    return user.email === newUser.email
   });
 
-  if (!user) {
-    const newUser: User = { id: users.length, name, email, password }
+  if (!existingUser) {
+    newUser.id = users.length;
     users.push(newUser)
-    res.send({ success: true, title: "New User Created!", text: "Have fun!", user: newUser })
+    res.send({ status: "success", title: "New User Created!", text: "Have fun!", user: newUser })
   }
   else {
-    res.send({ success: false, title: "User already exists!", text: "Try a different email.", user: null })
+    res.send({ status: "error", title: "User already exists!", text: "Try a different email.", user: null })
   }
   return
 })

@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
-
 interface Player {
 
   firstName: string,
@@ -29,7 +28,7 @@ export const FantasyTeamContext = createContext<ContextType>({
   clear: () => { },
 });
 
-export const SelectedFilesProvider: React.FC<{
+export const FantasyTeamProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [team, setTeam] = useState<Player[]>([]);
@@ -81,7 +80,7 @@ export const useFantasyTeam = () => {
   const context = useContext(FantasyTeamContext);
   if (context === undefined) {
     throw new Error(
-      "useFantasyTeam must be used within a FantasyTeamContext.Provider"
+      "useFantasyTeam must be used within a FantasyTeamProvider"
     );
   }
   return context;
