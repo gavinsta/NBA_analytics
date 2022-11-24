@@ -1,7 +1,7 @@
 import { Tab, Tabs, TabList, TabPanels, TabPanel } from '@chakra-ui/react'
-import TeamView from './TeamView'
-import FinancialDisplay from './FinancialDisplay'
-export default function MainDisplay() {
+import TeamView from '../components/TeamView'
+import FinancialDisplay from '../components/FinancialDisplay'
+export default function SimulatorScreen() {
   return (
     <Tabs>
       <TabList>

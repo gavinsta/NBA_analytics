@@ -1,42 +1,29 @@
 import React, { createContext, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
-interface Player {
+import { Player } from "../../../server/types/Player"
+import { Team } from "../../../server/types/Team"
 
-  firstName: string,
-  lastName: string,
-  salary: number,
-  //stats are per game
-  threePointers: number,
-  twoPointers: number,
-  minutes: number,
-}
-
-interface Team {
-  roster: Player[],
-  name: string,
-  budget: number
-}
 interface ContextType {
-  team: Player[];
-  select: (player: Player) => void;
+  team: Team | null;
+  addPlayer: (player: Player) => void;
   clear: () => void;
 }
 
 export const FantasyTeamContext = createContext<ContextType>({
-  team: [],
-  select: () => { },
+  team: null,
+  addPlayer: () => { },
   clear: () => { },
 });
 
 export const FantasyTeamProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [team, setTeam] = useState<Player[]>([]);
+  const [team, setTeam] = useState<Team | null>(null);
 
-  function select(player: Player) {
+  function addPlayer(player: Player) {
     // Prevent item select in mobile
     //if (isMobile) return;
-    setTeam((prev) => [...prev, player]);
+
   }
   /*
     function unselect(key: string) {
@@ -56,7 +43,7 @@ export const FantasyTeamProvider: React.FC<{
     }
   */
   function clear() {
-    setTeam([]);
+    setTeam(null);
   }
   /*
     function isSelected(key: string) {
@@ -67,7 +54,7 @@ export const FantasyTeamProvider: React.FC<{
     <FantasyTeamContext.Provider
       value={{
         team,
-        select,
+        addPlayer,
         clear,
       }}
     >

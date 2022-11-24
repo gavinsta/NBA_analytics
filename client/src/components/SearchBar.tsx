@@ -6,12 +6,15 @@ const SearchBar: React.FC = () => {
 
   return <HStack>
     <Input
-      placeholder="Search Player"
+      bg={"white"}
+      placeholder="Search for a player"
       onChange={e => {
         setSearchTerm(e.target.value)
       }}>
     </Input>
     <Button
+      color={"white"}
+      bg={"#ff9933"}
       onClick={() => {
         //search
       }}
@@ -20,3 +23,5 @@ const SearchBar: React.FC = () => {
     </Button>
   </HStack>
 }
+
+export default SearchBar

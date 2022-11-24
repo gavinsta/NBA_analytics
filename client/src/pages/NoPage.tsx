@@ -1,16 +1,22 @@
 import React from "react";
 import { GiBrokenHeart } from "react-icons/gi"
-import { Button, Icon, Stack } from "@chakra-ui/react"
+import { Button, Center, Icon, Stack, Text } from "@chakra-ui/react"
+import { Link } from "react-router-dom";
 const NoPage: React.FC = () => {
   return (
-    <Stack>
-      <Icon as={GiBrokenHeart} boxSize={15} />
-      Whoops you're lost.
-      <Button
-        color={"orange.300"}>
-        Take me back!
-      </Button>
-    </Stack>
+    <Center>
+      <Stack>
+        <Icon as={GiBrokenHeart} boxSize={50} alignSelf={"center"} />
+        <Text>Whoops you got lost!</Text>
+        <Link to={"/"}>
+          <Button
+            bg={"orange"}
+            color={"white"}>
+            Take me Home
+          </Button>
+        </Link>
+      </Stack>
+    </Center>
 
   )
 }
