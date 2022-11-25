@@ -31,13 +31,13 @@ const Home: React.FC = () => {
         <ButtonGroup
           colorScheme={"orange"}>
           <Link to='/signupPage' >
-            <Button as="a">
+            <Button>
               Sign Up
             </Button>
           </Link>
 
           <Link to='/loginPage'>
-            <Button as="a">
+            <Button>
               Log In
             </Button>
           </Link>
@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           <Text
             textAlign={"center"}>
 
-            {user && `Welcome ${user.name}`}
+            {user && `Welcome ${user.name}\n${user.email}\n${user.password}`}
           </Text>
           {renderOptions()}
         </Stack>

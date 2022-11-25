@@ -1,8 +1,9 @@
 import { User } from "../../../server/types/User"
 import React, { createContext, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
-import { getUser, tryCreateNewUser } from "../utils/DataUtils"
+import { tryGetUser, tryCreateNewUser } from "../utils/DataUtils"
 import { useToast } from "@chakra-ui/react"
+import { UserQueryResponse } from "../../../server/types/QueryResponse";
 interface ContextType {
   user: User | null;
   createNewUser: (user: User) => void;
@@ -23,23 +24,23 @@ export const UserContextProvider: React.FC<{
 }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const toast = useToast();
-  const createNewUser = async (user: User) => {
-    const res: ({ status: string, title: string, user: User | null }) = await tryCreateNewUser(
-      URL + "/signup", user
+  const createNewUser = async (newUser: User) => {
+    const res: UserQueryResponse = await tryCreateNewUser(
+      URL + "/signup", newUser
     )
 
     if (res.status === "error") {
       toast({
         status: "error",
-        title: "Failed to create new user",
-        description: res.title
+        title: res.title,
+        description: res.text
       })
     }
     else {
       toast({
         status: "success",
-        title: "New User Created!",
-        description: res.title
+        title: res.title,
+        description: res.text
       })
 
       setUser(res.user)
@@ -47,7 +48,7 @@ export const UserContextProvider: React.FC<{
   }
 
   const login = async (email: string, password: string) => {
-    const res: ({ status: string, title: string, user: User | null }) = await getUser(
+    const res: ({ status: string, title: string, user: User | null }) = await tryGetUser(
       URL + "/login", email, password
     )
     if (res.status === "error") {

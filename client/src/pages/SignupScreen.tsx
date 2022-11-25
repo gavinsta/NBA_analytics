@@ -1,20 +1,20 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react"
 import { User } from "../../../server/types/User"
-import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack } from "@chakra-ui/react";
+import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Alert, AlertIcon } from "@chakra-ui/react";
 import { useUserContext } from "../contexts/UserContext";
 import { Navigate } from "react-router-dom";
 const defaultFormFields = {
   name: '',
   email: '',
   password: '',
+  confirm_password: ''
 }
 
 const SignupScreen: React.FC = () => {
   const { createNewUser, user } = useUserContext();
   // react hooks
   const [formFields, setFormFields] = useState(defaultFormFields)
-  const { name, email, password } = formFields
-
+  const { name, email, password, confirm_password } = formFields
   const toast = useToast();
   const resetFormFields = () => {
     return (
@@ -30,7 +30,6 @@ const SignupScreen: React.FC = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const tempUser: User = {
-      id: 0,
       name: name,
       email: email,
       password: password
@@ -45,17 +44,20 @@ const SignupScreen: React.FC = () => {
   }
   return (
     <Center
+      bg={"lightgrey"}
       height={"80vh"}
       alignContent={"center"}>
       {renderRedirect()}
 
 
       <form onSubmit={handleSubmit}>
-        <Stack>
+        <Stack
+        >
           <Text>
-            Sign Up to have fun!
+            Sign up to create your own fantasy simulator NBA team!
           </Text>
           <Input
+            bg={"white"}
             placeholder="Name"
             type="name"
             required
@@ -64,6 +66,7 @@ const SignupScreen: React.FC = () => {
             onChange={handleChange}
           />
           <Input
+            bg={"white"}
             placeholder="Email"
             type="email"
             required
@@ -72,6 +75,7 @@ const SignupScreen: React.FC = () => {
             onChange={handleChange}
           />
           <Input
+            bg={"white"}
             placeholder="Password"
             type='password'
             required
@@ -79,8 +83,25 @@ const SignupScreen: React.FC = () => {
             value={password}
             onChange={handleChange}
           />
-          <ButtonGroup>
-            <Button type="submit">Sign Up</Button>
+          {formFields.confirm_password !== formFields.password ? <Alert
+            status='warning'
+            variant={"subtle"}
+          >
+            <AlertIcon />
+            Passwords don't match!
+          </Alert> : <></>}
+          <Input
+            bg={"white"}
+            placeholder="Confirm Password"
+            type='password'
+            required
+            name='confirm_password'
+            value={confirm_password}
+            onChange={handleChange}
+          />
+          <ButtonGroup
+            colorScheme={"orange"}>
+            <Button type="submit">Sign me up!</Button>
             <Button type="button" onClick={resetFormFields}>Clear</Button>
           </ButtonGroup>
         </Stack>
