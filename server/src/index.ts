@@ -4,6 +4,7 @@ import path from "path";
 import cors from "cors";
 import { User } from "../types/User"
 import * as dbAccess from "./utils/DatabaseAccess"
+import { SQLsearchterm } from "../types/QueryRequest";
 interface LoginFormInputs {
   email: string,
   password: string
@@ -70,6 +71,22 @@ app.post('/signup', async (req: Request, res: Response) => {
   console.log("Success!")
   return res.status(200).json({ status: "success", title: result.title, text: result.text, user: result.user })
 });
+
+app.post('/search', async (req: Request, res: Response) => {
+  const search: SQLsearchterm = req.body
+  console.log(search)
+
+  if (search.type === "Player") {
+    const result = await dbAccess.findPlayers(search)
+
+    if (!result.players) {
+      return res.status(404).json({ status: "error", title: result.title, text: result.text, players: [] })
+    }
+    else {
+      return res.status(200).json({ status: "success", title: result.title, text: result.text, players: result.players })
+    }
+  }
+})
 app.listen(PORT, () => {
   console.log("Listening on port: " + PORT);
 });

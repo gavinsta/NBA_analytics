@@ -23,8 +23,8 @@
       "askForPassword": true,
       "driver": "MariaDB",
       "database": "NBA_APP",
-      "username": "gavinsta",
-      "name": "DATA604_NBA_APP"
+      "username": "root",
+      "name": "NBA_APP_admin"
     },
     {
       "mysqlOptions": {
@@ -35,8 +35,8 @@
       "port": 3306,
       "askForPassword": true,
       "driver": "MariaDB",
-      "name": "test_app_connection",
-      "username": "root",
+      "name": "NBA_APP_default_connection",
+      "username": "app",
       "database": "NBA_APP"
     }
   ]

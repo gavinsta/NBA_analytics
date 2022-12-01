@@ -34,7 +34,16 @@ const SignupScreen: React.FC = () => {
       email: email,
       password: password
     }
-    await createNewUser(tempUser)
+    if (formFields.confirm_password !== formFields.password) {
+      toast({
+        status: "error",
+        title: "Passwords must match",
+        description: "Try again",
+        variant: "subtle",
+        position: "top"
+      })
+    }
+    else await createNewUser(tempUser)
   }
 
   const renderRedirect = () => {

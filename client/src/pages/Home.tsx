@@ -4,6 +4,8 @@ import { Box, Button, ButtonGroup, Center, Heading, Icon, Spacer, Stack, Text } 
 import { Link } from "react-router-dom"
 import { GiBasketballBall, GiBasketballBasket } from "react-icons/gi"
 import { useUserContext } from "../contexts/UserContext"
+import Court from "../components/Court";
+import NBAcourt from "../tmp/NBAcourt";
 const Home: React.FC = () => {
   const { user, logout } = useUserContext();
 
@@ -77,7 +79,7 @@ const Home: React.FC = () => {
         </Stack>
       </Center>
       <Spacer
-        height={200} />
+        height={100} />
       <Center
         height={"100%"}
         alignContent={"center"}>
@@ -89,6 +91,16 @@ const Home: React.FC = () => {
           </Text>
           {renderOptions()}
         </Stack>
+
+      </Center>
+      <Spacer height={10} />
+      <Center>
+
+        <Court
+          usableWidth={500}
+          height={500}
+          comp={null} />
+
       </Center>
     </Box>
   )

@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
 import { tryGetUser, tryCreateNewUser } from "../utils/DataUtils"
 import { useToast } from "@chakra-ui/react"
-import { UserQueryResponse } from "../../../server/types/QueryResponse";
+import { UserQueryResponse } from "../../../server/types/UserQueryResponse";
 interface ContextType {
   user: User | null;
   createNewUser: (user: User) => void;
@@ -22,6 +22,7 @@ export const UserContext = createContext<ContextType>({
 export const UserContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+
   const [user, setUser] = useState<User | null>(null);
   const toast = useToast();
   const createNewUser = async (newUser: User) => {
@@ -48,21 +49,21 @@ export const UserContextProvider: React.FC<{
   }
 
   const login = async (email: string, password: string) => {
-    const res: ({ status: string, title: string, user: User | null }) = await tryGetUser(
+    const res: (UserQueryResponse) = await tryGetUser(
       URL + "/login", email, password
     )
     if (res.status === "error") {
       toast({
         status: "error",
-        title: "Invalid Email or Password",
-        description: res.title,
+        title: res.title,
+        description: res.text,
       })
     }
     else {
       toast({
         status: "success",
-        title: "Logged in",
-        description: res.title,
+        title: res.title,
+        description: res.text,
       })
 
       setUser(res.user)

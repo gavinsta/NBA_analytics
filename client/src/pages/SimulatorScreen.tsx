@@ -3,14 +3,24 @@ import TeamView from '../components/TeamView'
 import FinancialDisplay from '../components/FinancialDisplay'
 export default function SimulatorScreen() {
   return (
-    <Tabs>
-      <TabList>
-        <Tab>Team View</Tab>
-        <Tab>Financials</Tab>
+    <Tabs
+      variant={"enclosed-colored"}
+
+
+    >
+      <TabList
+
+      >
+        <Tab
+          fontWeight={"bold"}>Team View</Tab>
+        <Tab
+          fontWeight={"bold"}>Financials (WIP)</Tab>
       </TabList>
 
-      <TabPanels>
-        <TabPanel>
+      <TabPanels
+      >
+        <TabPanel
+        >
           <TeamView />
         </TabPanel>
         <TabPanel>

@@ -42,6 +42,10 @@ PASSWORD: `mypass`
 USER: `gavinsta`
 PASSWORD: `mypass`
 
+**App credentials**
+USER: `app`
+PASSWORD: `not@$ecret`
+
 ### Manually accessing Server through Docker:
 ```console
 docker exec -it {CONTAINER_NAME} mariadb --user root -p{PASSWORD}
@@ -68,26 +72,77 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mar
 
 
 
-### Granting Privileges
+### GRANT notes
+`GRANT ALL` examples:
 ```sql
 --For Local access
 grant all privileges on DATABASE_NAME.* TO 'USER_NAME'@'localhost' identified by 'PASSWORD';
---For Remote access
+--For all access
 grant all privileges on DATABASE_NAME.* TO 'USER_NAME'@'%' identified by 'PASSWORD';
-
-
 ```
+`GRANT` specific permissions:
+
+For `'app'`:
+```sql
+grant select,insert,update on NBA_APP.users to 'app'@'%'
+```
+### CREATE user notes
+```sql
+CREATE user 'USER_NAME'@'%' identified by 'PASSWORD'
+```
+
+
 From: https://docs.bitnami.com/aws/infrastructure/jruby/configuration/create-database-mariadb/
+
 
 ## Data handling
 
 ### Loading data into databse from CSV
 
 ```sql
-LOAD DATA LOCAL INFILE 'source.csv' INTO target_db.target_table FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\r\n';
+LOAD DATA LOCAL INFILE 'source.csv' INTO target_db.target_table FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
 ```
-
 https://www.simplified.guide/mysql-mariadb/import-csv
+
+For our `playerStats_perGame_22_23` table, the data was loaded like so:
+
+```sql
+--@block Insert data from csv
+LOAD DATA LOCAL INFILE '/Users/gavinlau/Documents/MDSA/DATA604/NBA_app/basketball_data/playerstats-22.csv' INTO TABLE NBA_APP.playerStats_perGame_22_23 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES (
+  --Dummy variable for the 'rank' column of the CSV
+  @discardRK,
+  Player,
+  Pos,
+  Age,
+  Tm,
+  G,
+  GS,
+  MP,
+  FG,
+  FGA,
+  FGcent,
+  3P,
+  3PA,
+  3Pcent,
+  2P,
+  2PA,
+  2Pcent,
+  eFGcent,
+  FT,
+  FTA,
+  FTcent,
+  ORB,
+  DRB,
+  TRB,
+  AST,
+  STL,
+  BLK,
+  TOV,
+  PF,
+  PTS,
+  Player_additional
+);
+```
 
 ## `NBA_APP` database managment
 
@@ -117,4 +172,43 @@ insert into NBA_APP.users VALUES (
   null
   );
 
+```
+
+## Troubleshooting Links
+- Problem: Issues with app having the appropritate permissions when constructing a team-view
+    - Solution from [GRANT INSERT on tables participating in an updateable view](https://stackoverflow.com/questions/45675205/grant-insert-on-tables-participating-in-an-updateable-view)
+- 
+
+# Additional stuff
+
+Comments on each column of the data
+```sql
+COMMENT ON Rk IS "Rank",
+COMMENT = "Position",
+COMMENT = "Team",
+COMMENT = "Games",
+COMMENT = "Games Started",
+COMMENT = "Minutes Played",
+COMMENT = "Field Goals Per Game",
+COMMENT = "Field Goal Attempts Per Game",
+COMMENT = "Field Goal Percentage",
+COMMENT = "3-Point Field Goals Per Game",
+ COMMENT = "3-Point Field Goals Attempted Per Game",
+  COMMENT = "3-Point Field Goal Percentage",
+  COMMENT = "2-Point Field Goals Per Game",
+  COMMENT = "2-Point Field Goals Attempted Per Game",
+  COMMENT = "2-Point Field Goal Percentage",
+  COMMENT = "Effective Field Goal Percentage",
+  COMMENT = "Free Throws Per Game",
+  COMMENT = "Free Throw Attempts Per Game",
+  COMMENT = "Free Throw Percentage",
+  COMMENT = "Offensive Rebounds Per Game",
+  COMMENT = "Defensive Rebounds Per Game",
+  COMMENT = "Total Rebounds Per Game",
+  COMMENT = "Assists Per Game",
+  COMMENT = "Steals Per Game",
+  COMMENT = "Blocks Per Game",
+  COMMENT = "Turnovers Per Game",
+  COMMENT = "Personal Fouls Per Game",
+  COMMENT = "Points Per Game",
 ```
