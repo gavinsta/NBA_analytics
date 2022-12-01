@@ -90,4 +90,13 @@ SELECT A.*,
   B.`2022-23` as 'ContractPrice'
 FROM NBA_APP.playerStats_perGame_22_23 A,
   NBA_APP.playerContracts_22_23 B
-WHERE A.PlayerName = B.PlayerName
+WHERE A.PlayerName = B.PlayerName;
+--@block reset g and p
+UPDATE NBA_APP.users
+SET room_id = NULL
+WHERE email = "g@datanerds"
+  OR email = "p@datanerds";
+--@block reset v
+UPDATE NBA_APP.users
+SET room_id = "DEMO"
+WHERE email = "v@datanerds"

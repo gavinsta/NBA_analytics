@@ -13,29 +13,29 @@ VALUES(
     "g@datanerds",
     "notsecure",
     NULL,
-    NULL
+    "Motionless Foxes"
   );
 INSERT INTO NBA_APP.users (name, email, password, room_id, team_id)
 VALUES(
     "Vardaan",
     "v@datanerds",
     "notsecure",
-    NULL,
-    NULL
+    "DEMO",
+    "Rich Camels"
   );
 INSERT INTO NBA_APP.users (name, email, password, room_id, team_id)
 VALUES(
     "Mridul",
     "m@datanerds",
     "notsecure",
-    NULL,
-    NULL
+    "DEMO",
+    "Prickly Whales"
   );
 INSERT INTO NBA_APP.users (name, email, password, room_id, team_id)
 VALUES(
     "Prem",
     "p@datanerds",
     "notsecure",
-    NULL,
-    NULL
+    "DEMO",
+    "Amused Monkeys"
   );

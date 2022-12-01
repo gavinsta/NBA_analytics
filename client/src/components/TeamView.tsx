@@ -3,9 +3,12 @@ import { Box, Button, ButtonGroup, Heading, HStack, Input, Stack, Text } from "@
 import PlayerSearchDisplay from "./PlayerSearchDisplay";
 import RosterView from "./RosterView";
 import SearchBar from "./SearchBar";
+import SimulateView from "./SimulateView";
 import { useFantasyTeam } from "../contexts/FantasyTeamContext";
+import { useUserContext } from "../contexts/UserContext";
 const TeamView: React.FC = () => {
   const { team, budgetLeft } = useFantasyTeam();
+  const { user } = useUserContext();
   return (
     team ?
       <Box>
@@ -27,15 +30,14 @@ const TeamView: React.FC = () => {
 
             <Stack>
               <RosterView />
-
+              <SimulateView />
             </Stack>
           </Box>
         </Stack>
       </Box> :
       <Text>
-        Log in and create your team!
+        Sign up and create your team!
       </Text>
-
   );
 }
 

@@ -3,7 +3,7 @@ import { isMobile } from "react-device-detect";
 import { Player } from "../../../server/types/Player"
 import { Team } from "../../../server/types/Team"
 import { useToast } from "@chakra-ui/react"
-import { trySearchDatabase } from "../utils/DataUtils"
+import { trySearchDatabase, trySaveTeam, tryLoadTeam } from "../utils/DataUtils"
 import { PlayerQueryResponse } from "../../../server/types/PlayerQueryResponse"
 import { SQLsearchterm } from "../../../server/types/QueryRequest"
 interface ContextType {
@@ -46,6 +46,35 @@ export const FantasyTeamProvider: React.FC<{
     }
     setTeam(newTeam)
     setBudgetLeft(newTeam.budget)
+  }
+  async function saveTeam() {
+    if (team) {
+      const result = await trySaveTeam(team)
+      toast({
+        status: result.status,
+        title: result.title,
+        description: result.text
+      })
+    }
+    else {
+      toast({
+        status: "error",
+        title: "User has no team!",
+        description: "This is an unusual issue... sorry!"
+      })
+    }
+  }
+
+  async function loadTeam(team_id: string) {
+    const result = await tryLoadTeam(team_id)
+    toast({
+      status: result.status,
+      title: result.title,
+      description: result.text
+    })
+    if (result.team) {
+      setTeam(result.team)
+    }
   }
   function checkBudget(cost: number): boolean {
     if (budgetLeft - cost <= 0) {

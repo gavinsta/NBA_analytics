@@ -32,7 +32,9 @@ const SignupScreen: React.FC = () => {
     const tempUser: User = {
       name: name,
       email: email,
-      password: password
+      password: password,
+      room_id: null,
+      team_id: null,
     }
     if (formFields.confirm_password !== formFields.password) {
       toast({
