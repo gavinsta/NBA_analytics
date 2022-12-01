@@ -91,10 +91,10 @@ app.post('/search', async (req: Request, res: Response) => {
     const result = await dbAccess.findPlayers(search)
 
     if (!result.players) {
-      return res.status(404).json({ status: "error", title: result.title, text: result.text, players: [] })
+      return res.status(404).json({ status: "error", title: result.title, text: result.text, players: [], playerMetas: [] })
     }
     else {
-      return res.status(200).json({ status: "success", title: result.title, text: result.text, players: result.players })
+      return res.status(200).json({ status: "success", title: result.title, text: result.text, players: result.players, playerMetas: result.playerMetas })
     }
   }
   //TODO add in team search

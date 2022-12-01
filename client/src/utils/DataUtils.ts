@@ -95,7 +95,7 @@ export const trySearchDatabase = async (
   }
   catch (err) {
     console.log(err)
-    return ({ "status": "error", "title": `Search Failed`, "text": `${err}`, "players": [] })
+    return ({ "status": "error", "title": `Search Failed`, "text": `${err}`, "players": [], "playerMetas": [] })
   }
 }
 

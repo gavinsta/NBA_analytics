@@ -8,6 +8,7 @@ import { PlayerQueryResponse } from "../../../server/types/PlayerQueryResponse"
 import { SQLsearchterm } from "../../../server/types/QueryRequest"
 interface ContextType {
   team: Team | null;
+  playerMetas: Player[];
   createNewTeam: (name: string | null) => void;
   checkBudget: (cost: number) => boolean;
   budgetLeft: number;
@@ -20,6 +21,7 @@ interface ContextType {
 
 export const FantasyTeamContext = createContext<ContextType>({
   team: null,
+  playerMetas: [],
   createNewTeam: () => { },
   checkBudget: () => { return false },
   budgetLeft: 0,
@@ -37,6 +39,8 @@ export const FantasyTeamProvider: React.FC<{
   const toast = useToast();
   const [budgetLeft, setBudgetLeft] = useState<number>(0)
   const [queriedPlayers, setQueriedPlayers] = useState<Player[]>([])
+  const [queriedPlayerMetas, setQueriedPlayerMetas] = useState<Player[]>([])
+  const [playerMetas, setPlayerMetas] = useState<Player[]>([])
   function createNewTeam(name: string | null) {
     const newTeam: Team = {
       name: "Test Team",
@@ -86,6 +90,12 @@ export const FantasyTeamProvider: React.FC<{
     if (team) {
       team?.roster.push(player)
       setBudgetLeft(budgetLeft - player.ContractPrice)
+      //TODO hacky method of including player meta data. Will consider changing if we keep this app longer
+      for (var i = 0; i < queriedPlayerMetas.length; i++) {
+        if (queriedPlayerMetas[i].PlayerName == player.PlayerName) {
+          playerMetas.push(queriedPlayerMetas[i])
+        }
+      }
     }
     // Prevent item select in mobile
     //if (isMobile) return;
@@ -114,14 +124,15 @@ export const FantasyTeamProvider: React.FC<{
         description: res.text,
       })
       setQueriedPlayers(res.players)
+      setQueriedPlayerMetas(res.playerMetas)
     }
   }
-
-
 
   function clear() {
     setTeam(null);
   }
+
+  //TODO add remove player function
   /*
     function isSelected(key: string) {
       return values.includes(key);
@@ -131,6 +142,7 @@ export const FantasyTeamProvider: React.FC<{
     <FantasyTeamContext.Provider
       value={{
         team,
+        playerMetas,
         createNewTeam,
         checkBudget,
         budgetLeft,

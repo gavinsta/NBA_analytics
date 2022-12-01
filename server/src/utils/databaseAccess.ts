@@ -155,6 +155,42 @@ function createQueryStringFromSearchTerm(searchTerm: SQLsearchterm): string {
   console.log(`Query Created: ${query}`)
   return query;
 }
+function createQueryStringForSTD(searchTerm: SQLsearchterm): string {
+  const PLAYER_TABLE = "playerstats_contracts_22_23"
+  //TODO add the TEAM table to MariaDB
+  const TEAM_TABLE = ""
+  let query = "SELECT * FROM "
+  if (searchTerm.type == "Team") {
+    query = query.concat(TEAM_TABLE)
+  }
+  else {
+    query = query.concat(PLAYER_TABLE)
+  }
+
+  query = query.concat(" WHERE ")
+
+  query = query.concat(searchTerm.criteria + " ")
+  let search = ''
+
+  switch (searchTerm.comparator) {
+    case "startsWith":
+      search = "LIKE \"%" + searchTerm.term + "\" "
+      break;
+    case "endsWith":
+      search = "LIKE \"" + searchTerm.term + "%\" "
+      break;
+    case "includes":
+      search = "LIKE \"%" + searchTerm.term + "%\" "
+      break;
+    default:
+      search = searchTerm.comparator + " " + searchTerm.term
+  }
+
+  query = query.concat(search);
+  query = query.concat(" AND stat = \"std\"")
+  console.log(`Query Created: ${query}`)
+  return query;
+}
 export async function findPlayers(searchTerm: SQLsearchterm): Promise<PlayerQueryResponse> {
   //create a connection
   let conn;
@@ -169,7 +205,8 @@ export async function findPlayers(searchTerm: SQLsearchterm): Promise<PlayerQuer
     status: "info",
     text: '',
     title: '',
-    players: []
+    players: [],
+    playerMetas: []
   }
   try {
     conn = await fetchConn();
@@ -185,9 +222,15 @@ export async function findPlayers(searchTerm: SQLsearchterm): Promise<PlayerQuer
       res.text = "Could not find any players that matched"
     }
     else {
+
+      var statsResults = await conn.query(createQueryStringForSTD(searchTerm))
       for (var i = 0; i < queryResults.length; i++) {
         res.players.push(queryResults[i])
       }
+      for (var i = 0; i < statsResults.length; i++) {
+        res.playerMetas.push(statsResults[i])
+      }
+
       res.status = "success"
       res.title = "Players found"
       res.text = "Select the ones you want!"

@@ -15,7 +15,7 @@ export type Player = {
   TwoP: number,
   TwoPA: number,
   TwoPcent: number,
-  eFGcent: number,
+  //eFGcent: number,
   FT: number,
   FTA: number,
   FTcent: number,

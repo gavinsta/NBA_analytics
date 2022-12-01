@@ -3,5 +3,6 @@ export type PlayerQueryResponse = {
   status: string,
   title: string,
   text: string,
-  players: Player[]
+  players: Player[],
+  playerMetas: Player[],
 }
