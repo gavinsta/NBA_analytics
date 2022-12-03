@@ -1,59 +1,77 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { isMobile } from "react-device-detect";
 import { Player } from "../../../server/types/Player"
 import { Team } from "../../../server/types/Team"
 import { useToast } from "@chakra-ui/react"
-import { trySearchDatabase, trySaveTeam, tryLoadTeam } from "../utils/DataUtils"
+import { trySearchDatabase, trySaveTeam, tryLoadTeam, tryLoadTeamMetadata } from "../utils/DataUtils"
 import { PlayerQueryResponse } from "../../../server/types/PlayerQueryResponse"
 import { SQLsearchterm } from "../../../server/types/QueryRequest"
+import generateTeamName from "../utils/TeamNameGenerator"
+import { useAppContext } from "./AppContext";
 interface ContextType {
   team: Team | null;
   playerMetas: Player[];
-  createNewTeam: (name: string | null) => void;
+  createNewTeam: (name?: string | null) => void;
+  saveTeam: () => void;
+  loadTeam: (team_id: string) => Promise<Team | null>;
+  clearTeam: () => void;
   checkBudget: (cost: number) => boolean;
-  budgetLeft: number;
-  addPlayer: (player: Player) => void;
+  currentBudget: () => number;
+  budget: number;
+  addPlayer: (player: Player, meta: Player) => void;
+  removePlayer: (player: Player) => void;
   viewPlayer: (player: Player) => void;
-  clear: () => void;
-  submitSearch: (search: SQLsearchterm) => void;
-  queriedPlayers: Player[]
+  checkAvailability: (playerName: Player) => "unavailable" | "nobudget" | "available";
+
 }
 
 export const FantasyTeamContext = createContext<ContextType>({
   team: null,
   playerMetas: [],
   createNewTeam: () => { },
+  saveTeam: () => { },
+  loadTeam: async () => { return null },
+  clearTeam: () => { },
   checkBudget: () => { return false },
-  budgetLeft: 0,
+  currentBudget: () => { return 0 },
+  budget: 0,
   addPlayer: () => { },
+  removePlayer: () => { },
   viewPlayer: () => { },
-  clear: () => { },
-  submitSearch: () => { },
-  queriedPlayers: []
+  checkAvailability: () => { return "unavailable" },
+
 });
-const URL = "http://localhost:8080"
+
 export const FantasyTeamProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const { URL } = useAppContext();
   const [team, setTeam] = useState<Team | null>(null);
+
   const toast = useToast();
-  const [budgetLeft, setBudgetLeft] = useState<number>(0)
-  const [queriedPlayers, setQueriedPlayers] = useState<Player[]>([])
-  const [queriedPlayerMetas, setQueriedPlayerMetas] = useState<Player[]>([])
+  const [budget, setBudget] = useState<number>(0)
   const [playerMetas, setPlayerMetas] = useState<Player[]>([])
-  function createNewTeam(name: string | null) {
+  useEffect(() => {
+    const savedTeam = localStorage.getItem("team");
+    if (savedTeam) {
+      const foundTeam = JSON.parse(savedTeam);
+      setTeam(foundTeam)
+    }
+  }, [])
+  function createNewTeam(name?: string | null) {
     const newTeam: Team = {
-      name: "Test Team",
+      name: generateTeamName(),
       roster: [],
       budget: 140000000,
-      year: 2022
+      year: 2022,
+
     }
     setTeam(newTeam)
-    setBudgetLeft(newTeam.budget)
+    setBudget(newTeam.budget)
   }
   async function saveTeam() {
     if (team) {
-      const result = await trySaveTeam(team)
+      const result = await trySaveTeam(URL, team)
       toast({
         status: result.status,
         title: result.title,
@@ -69,8 +87,8 @@ export const FantasyTeamProvider: React.FC<{
     }
   }
 
-  async function loadTeam(team_id: string) {
-    const result = await tryLoadTeam(team_id)
+  async function loadTeam(team_id: string): Promise<Team | null> {
+    const result = await tryLoadTeam(URL, team_id)
     toast({
       status: result.status,
       title: result.title,
@@ -78,79 +96,94 @@ export const FantasyTeamProvider: React.FC<{
     })
     if (result.team) {
       setTeam(result.team)
+      setBudget(result.team.budget)
+
+      const metaResult = await tryLoadTeamMetadata(URL, team_id)
+      if (metaResult.status == "success") {
+        setPlayerMetas(metaResult.metaDatas)
+      }
+
+      return result.team
     }
+    else return null
+  }
+  function clearTeam() {
+    setTeam(null)
+    setPlayerMetas([])
   }
   function checkBudget(cost: number): boolean {
-    if (budgetLeft - cost <= 0) {
+    if (budget - cost <= 0) {
       return false;
     }
     else return true;
   }
-  function addPlayer(player: Player) {
+
+  function currentBudget(): number {
     if (team) {
-      team?.roster.push(player)
-      setBudgetLeft(budgetLeft - player.ContractPrice)
-      //TODO hacky method of including player meta data. Will consider changing if we keep this app longer
-      for (var i = 0; i < queriedPlayerMetas.length; i++) {
-        if (queriedPlayerMetas[i].PlayerName == player.PlayerName) {
-          playerMetas.push(queriedPlayerMetas[i])
+      let price: number = 0;
+      for (var player of team.roster) {
+        price = price + +player.ContractPrice;
+      }
+      return team.budget - price;
+    }
+    else return 140000000;
+  }
+
+  function checkAvailability(player: Player): "available" | "unavailable" | "nobudget" {
+
+    if (!checkBudget(player.ContractPrice)) {
+      return "nobudget"
+    }
+    if (team) {
+      for (var i = 0; i < team.roster.length; i++) {
+        if (team.roster[i].PlayerName === player.PlayerName) {
+          return "unavailable"
         }
       }
+      return "available"
+    }
+    else return "available"
+
+  }
+  function viewPlayer(player: Player) {
+
+  }
+  function addPlayer(player: Player, meta: Player) {
+    if (team) {
+      setTeam({ ...team, roster: [...team.roster, player] })
+      playerMetas.push(meta)
     }
     // Prevent item select in mobile
     //if (isMobile) return;
   }
 
-  function viewPlayer(player: Player) {
-
-  }
-
-  const submitSearch = async (search: SQLsearchterm) => {
-
-    const res: PlayerQueryResponse = await trySearchDatabase(
-      URL + "/search", search
-    )
-    if (res.status === "error") {
-      toast({
-        status: "error",
-        title: res.title,
-        description: res.text,
-      })
-    }
-    else {
-      toast({
-        status: "success",
-        title: res.title,
-        description: res.text,
-      })
-      setQueriedPlayers(res.players)
-      setQueriedPlayerMetas(res.playerMetas)
+  function removePlayer(player: Player) {
+    //console.log(`trying to remove ${player.PlayerName}`)
+    if (team) {
+      const index = team.roster.indexOf(player)
+      if (index > -1) {
+        team.roster.splice(index, 1)
+        setTeam({ ...team })
+        playerMetas.splice(index, 1)
+      }
     }
   }
-
-  function clear() {
-    setTeam(null);
-  }
-
-  //TODO add remove player function
-  /*
-    function isSelected(key: string) {
-      return values.includes(key);
-    }
-  */
   return (
     <FantasyTeamContext.Provider
       value={{
         team,
         playerMetas,
         createNewTeam,
+        saveTeam,
+        loadTeam,
+        clearTeam,
         checkBudget,
-        budgetLeft,
+        currentBudget,
+        budget,
         addPlayer,
+        removePlayer,
+        checkAvailability,
         viewPlayer,
-        clear,
-        submitSearch,
-        queriedPlayers
       }}
     >
       {children}

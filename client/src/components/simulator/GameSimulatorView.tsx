@@ -4,16 +4,23 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  Box, Button, ButtonGroup, Center, HStack, Stack, Text,
+  Box, Button, ButtonGroup, Center, Icon, Heading, HStack, Stack, Text,
   useDisclosure,
+  Container,
 } from "@chakra-ui/react";
 import React, { useState, useRef } from "react";
-import { predictNegativePoints, predictPositivePoints, randomGameStats } from "../utils/SimulationMethods";
-import { useFantasyTeam } from "../contexts/FantasyTeamContext";
-
-const SimulateView: React.FC = () => {
+import { predictNegativePoints, predictPositivePoints, randomGameStats } from "../../utils/SimulationMethods";
+import { useFantasyTeam } from "../../contexts/FantasyTeamContext";
+import Court from "../Court";
+import { BsPlayCircle } from "react-icons/bs"
+import { Team } from "../../../../server/types/Team";
+import { GameOutcome } from "../../../../server/types/GameOutcome";
+const GameSimulatorView: React.FC = () => {
   //const [PP, setPP] = useState();
   //const [NP, setNP] = useState();
+  const [userTeamResults, setUserTeamResults] = useState<GameOutcome[]>([]);
+  const [opponentTeam, setOpponentTeam] = useState<Team | null>();
+  const [opponentTeamResults, setOpponentTeamResults] = useState<GameOutcome[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { team, playerMetas } = useFantasyTeam();
   const cancelRef = useRef<HTMLButtonElement>(null)
@@ -30,6 +37,14 @@ const SimulateView: React.FC = () => {
     return pp
   }
 
+  function simulateGameResults() {
+    if (team) {
+      const userResults = team.roster.map((player) => {
+        randomGameStats(team.roster[0], playerMetas[0], true)
+      });
+    }
+    //onOpen()
+  }
 
   function playByPlay() {
     const outcomes = team?.roster.map((player) => {
@@ -44,6 +59,20 @@ const SimulateView: React.FC = () => {
   return (<Box>
     <Stack>
       <HStack>
+        <Icon
+          as={BsPlayCircle}
+          color="white"
+          bg="black"
+          padding={2}
+          borderRadius={25}
+          w={20}
+          h={20}
+        />
+        <Heading
+        >
+          Game Simulator
+        </Heading> </HStack>
+      <HStack>
         <Stack>
           {simulatePos()}
         </Stack>
@@ -53,15 +82,7 @@ const SimulateView: React.FC = () => {
       </HStack>
       <ButtonGroup>
         <Button
-          onClick={
-            () => {
-              if (team) {
-                randomGameStats(team.roster[0], playerMetas[0], false)
-                randomGameStats(team.roster[0], playerMetas[0], true)
-              }
-              //onOpen()
-            }
-          }>
+          onClick={simulateGameResults}>
           Simulate
         </Button>
         <AlertDialog
@@ -97,7 +118,12 @@ const SimulateView: React.FC = () => {
         </AlertDialog>
       </ButtonGroup>
     </Stack>
+    <Container
+      maxWidth={"1000px"}>
+      <Court />
+    </Container>
+
   </Box>)
 }
 
-export default SimulateView
+export default GameSimulatorView

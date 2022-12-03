@@ -3,6 +3,7 @@ import { User } from "../../../server/types/User"
 import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack } from "@chakra-ui/react";
 import { useUserContext } from "../contexts/UserContext";
 import { Link, Navigate } from "react-router-dom";
+import { useFantasyTeam } from "../contexts/FantasyTeamContext";
 const defaultFormFields = {
   email: '',
   password: '',
@@ -10,6 +11,7 @@ const defaultFormFields = {
 
 const LoginScreen: React.FC = () => {
   const { login, user } = useUserContext();
+  const { loadTeam } = useFantasyTeam();
   // react hooks
   const [formFields, setFormFields] = useState(defaultFormFields)
   const { email, password } = formFields
@@ -28,7 +30,13 @@ const LoginScreen: React.FC = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    await login(email, password)
+    const loggedInUser = await login(email, password)
+    console.log(loggedInUser)
+    if (loggedInUser && loggedInUser.team_id) {
+      console.log(loggedInUser.team_id)
+      const returnedTeam = await loadTeam(loggedInUser.team_id)
+      if (returnedTeam) localStorage.setItem("team", JSON.stringify(returnedTeam))
+    }
   }
 
   const renderRedirect = () => {

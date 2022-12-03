@@ -23,6 +23,6 @@ const animals = [
   "Owls", "Peacocks", "Moles"
 ]
 
-export default function createTeamName(): string {
+export default function generateTeamName(): string {
   return adjectives[Math.floor(Math.random() * adjectives.length)] + " " + animals[Math.floor(Math.random() * animals.length)]
 }

@@ -101,12 +101,15 @@ app.post('/search', async (req: Request, res: Response) => {
 })
 
 app.post('/saveteam', async (req: Request, res: Response) => {
+  console.log(req.body)
   //prep the saveteam object
+  console.log("hitting end point")
+  const { team }: { team: Team } = req.body
   if (!req.body) {
     return res.status(404).json({ status: "error", title: "No Team received", text: "" })
   }
-  const team: Team = req.body.team;
-
+  console.log(req.body)
+  console.log(team)
   const result = await dbAccess.saveTeam(team)
   const saveTeam: SaveTeamFormat = {
     team_id: team.name,
@@ -139,10 +142,30 @@ app.post('/loadteam', async (req: Request, res: Response) => {
   if (!req.body) {
     return res.status(404).json({ status: "error", title: "No Team received", text: "" })
   }
-  const team_id: string = req.body;
-  const result = await dbAccess.getTeamFormat(team_id)
+  const { team_id } = req.body;
+  console.log(team_id)
+  const result = await dbAccess.getTeam(team_id)
 
   return res.status(200).json({ status: result.status, title: result.title, text: result.text, team: result.team })
+})
+
+app.post('/loadteammetadata', async (req: Request, res: Response) => {
+  //prep the saveteam object
+  if (!req.body) {
+    return res.status(404).json({ status: "error", title: "No Team received", text: "" })
+  }
+  const { team_id } = req.body;
+  console.log(team_id)
+  const result = await dbAccess.getTeamMetaData(team_id)
+
+  return res.status(200).json({ status: result.status, title: result.title, text: result.text, metaDatas: result.metaDatas })
+})
+app.get('/allteams', async (req: Request, res: Response) => {
+  const result = await dbAccess.getTeams();
+  if (result.status == "success") {
+    return res.status(200).json(result)
+  }
+  else return res.status(404).json({ status: "error", title: "Error communicating with server", text: "Maybe server is down?", teams: null })
 })
 app.listen(PORT, () => {
   console.log("Listening on port: " + PORT);

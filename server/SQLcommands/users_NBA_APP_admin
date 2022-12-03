@@ -15,13 +15,14 @@ VALUES(
     NULL,
     "Motionless Foxes"
   );
-INSERT INTO NBA_APP.users (name, email, password, room_id, team_id)
+--@block update for vardaan
+REPLACE INTO NBA_APP.users (name, email, password, room_id, team_id)
 VALUES(
     "Vardaan",
     "v@datanerds",
     "notsecure",
     "DEMO",
-    "Rich Camels"
+    "Gifted Goats"
   );
 INSERT INTO NBA_APP.users (name, email, password, room_id, team_id)
 VALUES(
@@ -39,3 +40,7 @@ VALUES(
     "DEMO",
     "Amused Monkeys"
   );
+--@block testblock
+SELECT *
+from NBA_APP.users
+WHERE name in ("Prem", "vardaan")

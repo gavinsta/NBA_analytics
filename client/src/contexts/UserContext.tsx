@@ -1,5 +1,5 @@
 import { User } from "../../../server/types/User"
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { isMobile } from "react-device-detect";
 import { tryGetUser, tryCreateNewUser, tryFindRoom } from "../utils/DataUtils"
 import { useToast } from "@chakra-ui/react"
@@ -8,7 +8,7 @@ import { createRoutesFromChildren } from "react-router-dom";
 interface ContextType {
   user: User | null;
   createNewUser: (user: User) => void;
-  login: (email: string, password: string) => void;
+  login: (email: string, password: string) => Promise<User | null>;
   logout: () => void;
   createRoom: (roomCode: string) => void;
   joinRoom: (roomCode: string) => void;
@@ -18,7 +18,7 @@ interface ContextType {
 const URL = "http://localhost:8080"
 export const UserContext = createContext<ContextType>({
   user: null,
-  login: () => { },
+  login: async () => { return null },
   logout: () => { },
   createNewUser: () => { },
   createRoom: () => { },
@@ -32,6 +32,14 @@ export const UserContextProvider: React.FC<{
   const [user, setUser] = useState<User | null>(null);
   const [inRoom, setInRoom] = useState<boolean>(false);
   const toast = useToast();
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("user");
+    if (loggedInUser) {
+      const foundUser = JSON.parse(loggedInUser);
+      setUser(foundUser)
+    }
+  }, [])
+
   const createNewUser = async (newUser: User) => {
     const res: UserQueryResponse = await tryCreateNewUser(
       URL + "/signup", newUser
@@ -55,7 +63,7 @@ export const UserContextProvider: React.FC<{
     }
   }
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User | null> => {
     const res: (UserQueryResponse) = await tryGetUser(
       URL + "/login", email, password
     )
@@ -74,10 +82,12 @@ export const UserContextProvider: React.FC<{
       })
 
       setUser(res.user)
-      if (user?.room_id) {
+      if (res.user?.room_id) {
         setInRoom(true)
       }
+      localStorage.setItem("user", JSON.stringify(res.user))
     }
+    return res.user;
   }
 
   const logout = () => {
@@ -87,6 +97,7 @@ export const UserContextProvider: React.FC<{
       title: "Logged out"
     })
     setInRoom(false)
+    localStorage.clear()
   }
 
   const joinRoom = async (roomCode: string) => {

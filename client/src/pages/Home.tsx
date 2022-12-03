@@ -1,28 +1,33 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom"
-import { Alert, Box, Button, ButtonGroup, Center, Heading, Icon, Input, Spacer, Stack, Text } from "@chakra-ui/react"
+import { Alert, Box, Button, ButtonGroup, Center, Heading, Icon, Input, Spacer, Stack, Text, Tooltip } from "@chakra-ui/react"
 import { Link } from "react-router-dom"
 import { GiBasketballBall, GiBasketballBasket } from "react-icons/gi"
 import { useUserContext } from "../contexts/UserContext"
+import { useFantasyTeam } from "../contexts/FantasyTeamContext";
 import Court from "../components/Court";
 import NBAcourt from "../tmp/NBAcourt";
 const Home: React.FC = () => {
+
   const { user, logout, createRoom, joinRoom } = useUserContext();
+  const { clearTeam } = useFantasyTeam();
   const [roomCode, setRoomCode] = useState<string>("");
   function roomControls() {
     if (user)
       return (<>{user.room_id ?
         <ButtonGroup>
-          <Link to='/simulator' >
-            <Button colorScheme={"green"}>
-              Go to the Simulator!
-            </Button>
-          </Link>
-          <Button
-          //TODO leave room
+
+          <Tooltip
+            label="We're working on this feature!"
           >
-            Leave Room
-          </Button>
+            <Button
+              disabled={true}
+            //TODO leave room
+            >
+              Leave Room
+            </Button>
+          </Tooltip>
+
         </ButtonGroup> : <Stack>{roomCode.length < 4 ? <Alert status="warning">
           Room code should be a minimum of 4 characters!
         </Alert> : roomCode.length > 10 ? <Alert status="warning">
@@ -54,7 +59,11 @@ const Home: React.FC = () => {
                 if (roomCode.length >= 4 && roomCode.length <= 10) {
                   createRoom(roomCode)
                 }
-              }}>
+              }}
+              //TODO disabled createRoom for now.
+              disabled={true}
+            >
+
               Create New Room
             </Button>
           </ButtonGroup></Stack>}
@@ -69,7 +78,10 @@ const Home: React.FC = () => {
           colorScheme={"orange"}
           variant={"solid"}>
           <Button
-            onClick={logout}>
+            onClick={() => {
+              logout();
+              clearTeam();
+            }}>
             Log Out
           </Button>
         </ButtonGroup>
@@ -96,7 +108,8 @@ const Home: React.FC = () => {
     }
   }
   return (
-    <Box>
+    <Box
+      alignContent={"center"}>
       <Center>
         <Stack
           height={"35%"}
@@ -129,27 +142,31 @@ const Home: React.FC = () => {
       <Spacer
         height={100} />
       <Text
+        fontSize={"24"}
         textAlign={"center"}>
 
-        {user && `Welcome ${user.name}\n${user.email}\n${user.password}`}
+        {user && `Welcome ${user.name}`}
       </Text>
+      <Text
+        textAlign={"center"}>
+        {user?.team_id ? `and the ${user.team_id}` : `No Team Yet!`}
+      </Text>
+
       <Center
         height={"100%"}
         alignContent={"center"}>
         <Stack>
           {renderOptions()}
           {roomControls()}
+          {user?.room_id ? <Link to='/simulator' >
+            <Button colorScheme={"green"}>
+              Go to the Simulator!
+            </Button>
+          </Link> : <></>}
         </Stack>
       </Center>
       <Spacer height={10} />
-      <Center>
 
-        <Court
-          usableWidth={500}
-          height={500}
-          comp={null} />
-
-      </Center>
     </Box>
   )
 }

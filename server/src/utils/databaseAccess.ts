@@ -5,9 +5,11 @@ import { Player } from "../../types/Player"
 import { UserQueryResponse } from "../../types/UserQueryResponse"
 import { PlayerQueryResponse } from "../../types/PlayerQueryResponse"
 import { SQLsearchterm } from "../../types/QueryRequest"
-import createTeamName from "../utils/TeamNameGenerator"
+import generateTeamName from "../../../client/src/utils/TeamNameGenerator"
 import { Team } from "../../types/Team"
 import { SaveTeamFormat } from "../../types/SaveTeamFormat"
+
+const PLAYER_TABLE = "playerstats_contracts_22_23"
 const pool = mariadb.createPool({
   //In production we will use the docker container address
   host: process.env.NODE_ENV === 'production' ? "172.17.0.2" : "127.0.0.1",
@@ -98,7 +100,6 @@ export async function createUser(newUser: User): Promise<UserQueryResponse> {
       res.text = "Email is already registered"
     }
     else {
-      newUser.team_id = createTeamName();
       var insertionQuery = `Insert into users (name,email,password,room_id,team_id) VALUES (?,?,?,NULL,?);`
       var result = await conn.query(insertionQuery, [newUser.name, newUser.email, newUser.password, newUser.team_id])
       console.log(result)
@@ -133,21 +134,21 @@ function createQueryStringFromSearchTerm(searchTerm: SQLsearchterm): string {
 
   query = query.concat(" WHERE ")
 
-  query = query.concat(searchTerm.criteria + " ")
+  query = query.concat(searchTerm.term + " ")
   let search = ''
 
   switch (searchTerm.comparator) {
     case "startsWith":
-      search = "LIKE \"%" + searchTerm.term + "\" "
+      search = "LIKE \"%" + searchTerm.value + "\" "
       break;
     case "endsWith":
-      search = "LIKE \"" + searchTerm.term + "%\" "
+      search = "LIKE \"" + searchTerm.value + "%\" "
       break;
     case "includes":
-      search = "LIKE \"%" + searchTerm.term + "%\" "
+      search = "LIKE \"%" + searchTerm.value + "%\" "
       break;
     default:
-      search = searchTerm.comparator + " " + searchTerm.term
+      search = searchTerm.comparator + " " + searchTerm.value
   }
 
   query = query.concat(search);
@@ -156,7 +157,7 @@ function createQueryStringFromSearchTerm(searchTerm: SQLsearchterm): string {
   return query;
 }
 function createQueryStringForSTD(searchTerm: SQLsearchterm): string {
-  const PLAYER_TABLE = "playerstats_contracts_22_23"
+
   //TODO add the TEAM table to MariaDB
   const TEAM_TABLE = ""
   let query = "SELECT * FROM "
@@ -169,21 +170,21 @@ function createQueryStringForSTD(searchTerm: SQLsearchterm): string {
 
   query = query.concat(" WHERE ")
 
-  query = query.concat(searchTerm.criteria + " ")
+  query = query.concat(searchTerm.term + " ")
   let search = ''
 
   switch (searchTerm.comparator) {
     case "startsWith":
-      search = "LIKE \"%" + searchTerm.term + "\" "
+      search = "LIKE \"%" + searchTerm.value + "\" "
       break;
     case "endsWith":
-      search = "LIKE \"" + searchTerm.term + "%\" "
+      search = "LIKE \"" + searchTerm.value + "%\" "
       break;
     case "includes":
-      search = "LIKE \"%" + searchTerm.term + "%\" "
+      search = "LIKE \"%" + searchTerm.value + "%\" "
       break;
     default:
-      search = searchTerm.comparator + " " + searchTerm.term
+      search = searchTerm.comparator + " " + searchTerm.value
   }
 
   query = query.concat(search);
@@ -379,10 +380,10 @@ export async function saveTeam(team: Team): Promise<{ status: string, title: str
     //console.log(queryResults.userExists)
     var nullArraySize = 15 - team.roster.length
     var queryArguments = []
-    queryArguments.push(team.name, team.year, team.budget)
+    queryArguments.push(team.name, team.name, team.year, team.budget)
     for (var i = 0; i < 15; i++) {
       if (i < team.roster.length) {
-        queryArguments.push(team.roster[i])
+        queryArguments.push(team.roster[i].PlayerName)
       }
       else {
         queryArguments.push("NULL")
@@ -390,7 +391,7 @@ export async function saveTeam(team: Team): Promise<{ status: string, title: str
     }
     if (queryResults.teamExists) {
       //if team exists, replace it
-      var insertionQuery = `Replace into teams (name,year,budget,player1,player2,player3,player4,player5,player6,player7,player8,player9,player10,player11,player12,player13,player14,player15)`
+      var insertionQuery = "Replace into teams (team_id,team_name,year,budget,player1,player2,player3,player4,player5,player6,player7,player8,player9,player10,player11,player12,player13,player14,player15) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
       var result = await conn.query(insertionQuery, queryArguments)
       console.log(result)
       res.status = "success"
@@ -399,7 +400,7 @@ export async function saveTeam(team: Team): Promise<{ status: string, title: str
     }
     else {
       //if team exists, replace it
-      var insertionQuery = `Insert into teams (name,year,budget,player1,player2,player3,player4,player5,player6,player7,player8,player9,player10,player11,player12,player13,player14,player15)`
+      var insertionQuery = "Insert into teams (team_id,team_name,year,budget,player1,player2,player3,player4,player5,player6,player7,player8,player9,player10,player11,player12,player13,player14,player15) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
       var result = await conn.query(insertionQuery, queryArguments)
       console.log(result)
       res.status = "success"
@@ -421,42 +422,228 @@ export async function saveTeam(team: Team): Promise<{ status: string, title: str
 }
 
 
-export async function getTeamFormat(team_id: string): Promise<{ status: string, title: string, text: string, team: SaveTeamFormat | null }> {
+export async function getTeams(): Promise<{ status: string, title: string, text: string, teams: SaveTeamFormat[] }> {
   let conn;
-  const res = {
+  const res: { status: string, title: string, text: string, teams: SaveTeamFormat[] } = {
+    status: "error",
+    title: '',
+    text: '',
+    teams: []
+  }
+
+  try {
+    conn = await fetchConn();
+    //TODO add support for finding only teams within your group.
+    var query = "SELECT * From NBA_APP.teams"
+    var result = await conn.query(query)
+    console.log(result)
+    res.status = "success"
+    res.teams = result
+  }
+  catch (err) {
+    res.status = "error"
+    res.title = "Sorry..."
+    res.text = "Error while trying to get all teams";
+    console.error(err)
+    //console.error(`${res.title}: ${res.text}`)
+  }
+  finally {
+    if (conn) conn.end();
+  }
+  return res;
+}
+export async function getTeam(team_id: string): Promise<{ status: string, title: string, text: string, team: Team | null }> {
+  let conn;
+  const res: {
+    status: "error" | "warning" | "success" | "info",
+    text: string,
+    title: string,
+    team: Team | null
+  } = {
     status: "info",
     text: "",
     title: "",
     team: null
   }
+
+  let teamFormat: SaveTeamFormat | null = null;
   try {
     conn = await fetchConn();
-
     //check if the user already exists
     var existsQuery = "SELECT * From teams where team_id = ?;"
+    //console.log(team_id)
+    //console.log(`${existsQuery}  : ${team_id.toString()}`)
     var queryResults = await conn.query(existsQuery, team_id)
+    //console.log(queryResults)
     if (queryResults.length !== 0) {
       res.status = "success"
       res.title = "Team Loaded"
       res.text = "Found your team."
-      res.team = queryResults[0]
+      teamFormat = queryResults[0]
+      //NEED TO DECRYPT INTO TEAM object 
+      if (teamFormat && teamFormat.player1 == null) {
+        res.status = "warning"
+        res.title = "Empty Team Roster"
+        res.text = "Try adding some players and saving"
+      }
+      else if (teamFormat == null) {
+        res.status = "error"
+        res.title = "Found Null team"
+        res.text = "Strange error..."
+      }
+      else {
+        //not an empty roster
+        try {
+          res.team = {
+            name: teamFormat.team_name,
+            year: teamFormat.year,
+            budget: teamFormat.budget,
+            roster: []
+          }
+          //get all the player names from the query
+          let sqlList = "("
+          for (const prop in teamFormat) {
+            if (prop.startsWith("player")) {
+              const val = teamFormat[prop as keyof typeof teamFormat];
+              if (val && val != "NULL") {
+                sqlList += "'" + val + "'" + ","
+              }
+            }
+          }
+
+          sqlList = sqlList.slice(0, -1)
+          sqlList += ")"
+          //transfer that array into a list string that will be usable...
+          //TODO susceptable to injection attacks...
+          var getAllPlayersQuery = `SELECT * From ${PLAYER_TABLE} WHERE PlayerName in ${sqlList} and stat = "avg"`
+          const foundPlayers: Player[] = await conn.query(getAllPlayersQuery)
+          for (var i = 0; i < foundPlayers.length; i++) {
+            res.team.roster.push(foundPlayers[i])
+          }
+        }
+        catch (err) {
+          res.status = "error"
+          res.title = "Sorry, could not load players in team!"
+          res.text = "MariaDB gave this error:\n" + err
+          console.log(err)
+          console.log(`${res.title}: ${res.text}`)
+          if (conn) conn.end()
+        }
+      }
     }
     else {
 
       res.status = "error"
       res.title = "Could not find your team"
-      res.text = "Strange error..."
+      res.text = "It's a strange error... Let us know what went wrong :)"
     }
   }
   catch (err) {
     res.status = "error"
-    res.title = "Sorry, could not save your team!"
+    res.title = "Sorry, could not load your team!"
     res.text = "MariaDB gave this error:\n" + err
     console.log(err)
     console.log(`${res.title}: ${res.text}`)
+    if (conn) conn.end()
   }
   finally {
     if (conn) conn.end()
   }
   return res;
 }
+
+export async function getTeamMetaData(team_id: string): Promise<{ status: string, title: string, text: string, metaDatas: Player[] }> {
+  let conn;
+  const res: {
+    status: "error" | "warning" | "success" | "info",
+    text: string,
+    title: string,
+    metaDatas: Player[]
+  } = {
+    status: "info",
+    text: "",
+    title: "",
+    metaDatas: []
+  }
+
+  let teamFormat: SaveTeamFormat | null = null;
+  try {
+    conn = await fetchConn();
+    //check if the user already exists
+    var existsQuery = "SELECT * From teams where team_id = ? Limit 1;"
+    //console.log(team_id)
+    //console.log(`${existsQuery}  : ${team_id.toString()}`)
+    var queryResults = await conn.query(existsQuery, team_id)
+    //console.log(queryResults)
+    if (queryResults.length !== 0) {
+      res.status = "success"
+      res.title = "Stats data loaded"
+      res.text = "Found your team."
+      teamFormat = queryResults[0]
+      //NEED TO DECRYPT INTO TEAM object 
+      if (teamFormat == null) {
+        res.status = "error"
+        res.title = "Found Null team"
+        res.text = "Strange error..."
+      }
+      else {
+        //not an empty roster
+        try {
+          //get all the player names from the query
+          let sqlList = "("
+          for (const prop in teamFormat) {
+            if (prop.startsWith("player")) {
+              const val = teamFormat[prop as keyof typeof teamFormat];
+              if (val && val != "NULL") {
+                sqlList += "'" + val + "'" + ","
+              }
+            }
+          }
+
+          sqlList = sqlList.slice(0, -1)
+          sqlList += ")"
+          //transfer that array into a list string that will be usable...
+          //TODO susceptable to injection attacks...
+          var getAllPlayersQuery = `SELECT * From ${PLAYER_TABLE} WHERE PlayerName in ${sqlList} and stat = "std"`
+          const foundPlayers: Player[] = await conn.query(getAllPlayersQuery)
+          for (var i = 0; i < foundPlayers.length; i++) {
+            res.metaDatas.push(foundPlayers[i])
+          }
+        }
+        catch (err) {
+          res.status = "error"
+          res.title = "Sorry, could not load player metadatas in team!"
+          res.text = "MariaDB gave this error:\n" + err
+          console.log(err)
+          console.log(`${res.title}: ${res.text}`)
+          if (conn) conn.end()
+        }
+      }
+    }
+    else {
+
+      res.status = "error"
+      res.title = "Could not find your team"
+      res.text = "It's a strange error... Let us know what went wrong :)"
+    }
+  }
+  catch (err) {
+    res.status = "error"
+    res.title = "Sorry, could not load your team!"
+    res.text = "MariaDB gave this error:\n" + err
+    console.log(err)
+    console.log(`${res.title}: ${res.text}`)
+    if (conn) conn.end()
+  }
+  finally {
+    if (conn) conn.end()
+  }
+  return res;
+}
+
+
+//TODO update team name
+export async function updateTeamName(team_id: string) {
+  //update team and users table
+}
+//newUser.team_id = createTeamName();

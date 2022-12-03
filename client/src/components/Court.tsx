@@ -42,9 +42,11 @@ const Court = ({ usableWidth, height, comp }) => {
 }
 */
 
-const Court = ({ usableWidth: number, height, comp }) => {
+const Court = () => {
   return (
-    <img src={NBAcourt}></img>
+    <img
+
+      src={NBAcourt}></img>
   )
 }
 export default Court

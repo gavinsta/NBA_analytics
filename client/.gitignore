@@ -9,6 +9,10 @@
 /coverage
 /tmp
 tmp/
+
+#analytics (ignore atm)
+/data_analyticis
+
 # production
 /build
 /out

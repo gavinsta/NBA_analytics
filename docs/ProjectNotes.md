@@ -174,10 +174,16 @@ insert into NBA_APP.users VALUES (
 
 ```
 
+## MariaDB Node.js connector
+https://www.section.io/engineering-education/getting-started-with-mariadb-using-docker-and-nodejs/
+
 ## Troubleshooting Links
 - Problem: Issues with app having the appropritate permissions when constructing a team-view
     - Solution from [GRANT INSERT on tables participating in an updateable view](https://stackoverflow.com/questions/45675205/grant-insert-on-tables-participating-in-an-updateable-view)
 - 
+
+# Simulation and Math notes
+[Box Mueller transformation for simulating player values in Javascript](https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve)
 
 # Additional stuff
 

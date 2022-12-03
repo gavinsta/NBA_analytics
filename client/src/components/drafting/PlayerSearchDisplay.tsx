@@ -1,20 +1,15 @@
 import { List, Stack } from "@chakra-ui/react";
-import { useFantasyTeam } from "../contexts/FantasyTeamContext";
-import PlayerButton from "./PlayerButton"
+import { useFantasyTeam } from "../../contexts/FantasyTeamContext";
+import DraftPlayerButton from "./DraftPlayerButton"
 import { render } from "@testing-library/react";
-import { Player } from "../../../server/types/Player";
+import { Player } from "../../../../server/types/Player";
 import { stat } from "fs";
-const PlayerSearchDisplay: React.FC = () => {
-  const { team, queriedPlayers, checkBudget } = useFantasyTeam();
-  function checkAvailability(player: Player): "available" | "unavailable" | "nobudget" {
-    if (!checkBudget(player.ContractPrice)) {
-      return "nobudget"
-    }
-    if (team && team.roster.indexOf(player) !== -1) {
-      return "unavailable"
-    }
-    else return "available"
-  }
+const PlayerSearchDisplay: React.FC<{
+  checkAvailability: (player: Player) => "available" | "unavailable" | "nobudget",
+  queriedPlayers: Player[],
+  addPlayer: (player: Player) => void,
+  viewPlayer: (player: Player) => void,
+}> = ({ checkAvailability, queriedPlayers, addPlayer, viewPlayer }) => {
 
   function getStatus(status: "available" | "unavailable" | "nobudget"): "success" | "error" | "warning" | "info" {
     if (status == "available") {
@@ -44,7 +39,9 @@ const PlayerSearchDisplay: React.FC = () => {
   function renderPlayerButtons() {
     return queriedPlayers.map(player => {
       //TODO add status of the button
-      return <PlayerButton
+      return <DraftPlayerButton
+        addPlayer={addPlayer}
+        viewPlayer={viewPlayer}
         statusText={getStatusText(checkAvailability(player))}
         status={getStatus(checkAvailability(player))}
         key="{player}"

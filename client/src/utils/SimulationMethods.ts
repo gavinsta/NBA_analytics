@@ -1,5 +1,5 @@
 import { Player } from "../../../server/types/Player"
-
+import { GameOutcome } from "../../../server/types/GameOutcome"
 export function predictPositivePoints(player: Player): number {
   const { MP, ThreeP, TwoP, DRB, AST, TOV } = player
   const val = 1.182965 + 0.164520 * MP + 1.058200 * ThreeP + 0.393399 * TwoP + 1.085329 * DRB + 1.486653 * AST - 0.411815 * TOV + 0.058070 * DRB * AST - 0.131127 * ThreeP * TOV - 0.043513 * MP * AST - 0.033444 * MP * DRB
@@ -18,7 +18,7 @@ export function predictNegativePoints(player: Player): number {
  * @param checks Should we check for whether these values are 'real' or not
  * @returns 
  */
-export function randomGameStats(p: Player, m: Player, checks: boolean) {
+export function randomGameStats(p: Player, m: Player, checks: boolean): GameOutcome {
 
   function sim(mean: number, std: number) {
     return Math.floor(rand_bm(mean - std * 2, mean + std * 2, 1))
@@ -49,10 +49,11 @@ export function randomGameStats(p: Player, m: Player, checks: boolean) {
     //TODO create some method to resolve this difference
   }
 
-  var GS = sim(p.GS, m.GS)
-  if (checks && GS != 0 && GS != 1) {
-    if (GS > 1) GS = 1
-    if (GS < 0) GS = 0
+  var simGS = sim(p.GS, m.GS)
+  var GS: 1 | 0 = 0
+  if (simGS != 0 && simGS != 1) {
+    if (simGS > 1) GS = 1
+    if (simGS < 0) GS = 0
   }
 
   var ORB = sim(p.ORB, m.ORB)
@@ -76,7 +77,8 @@ export function randomGameStats(p: Player, m: Player, checks: boolean) {
     TOV: sim(p.TOV, m.TOV),
     PF: sim(p.PF, m.PF),
     PTS: sim(p.PTS, m.PTS),
-    PTS_diff: PTS_diff
+    PTS_diff: PTS_diff,
+    plays: []
   }
 
 

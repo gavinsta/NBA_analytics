@@ -1,6 +1,7 @@
 import { Button, ButtonGroup } from "@chakra-ui/react";
-
-const FinancialDisplay: React.FC = () => {
+import React from "react";
+import Plot from "react-plotly.js"
+const StatisticsDisplay: React.FC = () => {
   return <>
     <ButtonGroup
       colorScheme={"orange"}>
@@ -11,7 +12,8 @@ const FinancialDisplay: React.FC = () => {
 
       </Button>
     </ButtonGroup>
+
   </>
 }
 
-export default FinancialDisplay;
+export default StatisticsDisplay;
