@@ -1,5 +1,5 @@
 import React from 'react'
-import NBAcourt from "../tmp/NBA_court.svg"
+import NBAcourt from "../additional_resources/NBA_court.svg"
 /*
 const Court = ({ usableWidth, height, comp }) => {
   return (

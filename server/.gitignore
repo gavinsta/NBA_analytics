@@ -3,7 +3,8 @@
 #production
 node_modules
 
-yarn-error.logyarn.lock
+yarn-error.log
+yarn.lock
 package-lock.json
 /config/dev.js
 ecosystem.config.js
