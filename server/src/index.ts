@@ -18,18 +18,25 @@ const app: Express = express();
 app.use(cors());
 app.use(express.json())
 const PORT = process.env.PORT || 8080;
-
+//TODO note the various modes are production, staging and development
 if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../../../client/build')));
+
+  app.get('/home', function (req: Request, res: Response) {
+    res.sendFile(path.join(__dirname, '../../../client/build', 'index.html'));
+  });
+
+}
+else if (process.env.NODE_ENV === 'staging') {
+  app.get('/', (req: Request, res: Response) => {
+    res.send(`<h1>Server is in staging mode!</h1><h2>NODE_ENV: ${process.env.NODE_ENV} <br/> DB_HOST: ${process.env.DB_HOST}</h2>`)
+  });
+}
+else {
   app.use(express.static(path.join(__dirname, '../../client/build')));
 
   app.get('/home', function (req: Request, res: Response) {
     res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
-  });
-
-}
-else {
-  app.get('/', (req: Request, res: Response) => {
-    res.send(`<h1>Server is in development mode!</h1><h2>NODE_ENV: ${process.env.NODE_ENV} <br/> DB_HOST: ${process.env.DB_HOST}</h2>`)
   });
 }
 app.post('/login', async (req: Request, res: Response) => {
