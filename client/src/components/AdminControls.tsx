@@ -33,6 +33,12 @@ const AdminControls = () => {
           }>
           View metadata
         </Button>
+        <Button
+          onClick={() => {
+            console.log(user.email)
+          }}>
+          View User Data
+        </Button>
       </ButtonGroup></>
       : <></>}</>
   )

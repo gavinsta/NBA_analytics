@@ -39,7 +39,7 @@ const RosterView: React.FC = () => {
   }
 
   function checkValidTeam(): boolean {
-    if (team && team?.roster.length > 10 && currentBudget(team) > 0) {
+    if (team && team?.roster.length >= 10 && currentBudget(team) > 0) {
       setTeamIsValid(true)
       return true
     }

@@ -56,9 +56,10 @@ const SearchPlayerByStat = ({ search
         console.log(comparator)
       }}
     >
+      <option value={Comparator["="]}>=</option>
       <option value={Comparator["<"]}>{"<"}</option>
       <option value={Comparator["<="]}>{'\u2264'}</option>
-      <option value={Comparator["="]}>=</option>
+
       <option value={Comparator[">"]}>{">"}</option>
       <option value={Comparator[">="]}>{'\u2265'}</option>
     </Select>

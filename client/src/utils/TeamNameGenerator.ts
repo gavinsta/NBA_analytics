@@ -12,7 +12,7 @@ const adjectives = [
 ]
 
 const animals = [
-  "Ants", "Dogs", "Cows", "Mules", "Rats", "Chimpanzees", "Bats", "Donkeys", "Tigers", "Tortoises", "Panthers", "Antelopes", "Bears", "Leopards", "Cheetahs", "Hares",
+  "Ants", "Dogs", "Cows", "Mules", "Rats", "Chimpanzees", "Bats", "Donkeys", "Tigers", "Nerds", "Data", "Tortoises", "Panthers", "Antelopes", "Bears", "Leopards", "Cheetahs", "Hares",
   "Elephants", "Crabs", "Bees", "Polar bears", "Turtles", "Crows", "Crocodiles", "Alligators", "Birds", "Rabbits", "Porcupines", "Whales", "Hens", "Pigs", "Buffalo", "Pigeons",
   "Albatross", "Ostriches", "Armadillos", "Rabbits", "Cats", "Dolphins", "Frogs", "Emus", "Wolves", "Sheep", "Chickens", "Eagles", "Flying squirrels", "Chameleons", "Monkeys",
   "Tigers", "Cattle", "Goats", "Jackals", "Kangaroo", "Camels", "Whales", "Dogs", "Eels", "Geese", "Dodos", "Hippopotamuses", "Wolves", "Dolphins", "Beagles", "Gorillas", "Bulls",

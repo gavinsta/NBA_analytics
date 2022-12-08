@@ -110,7 +110,9 @@ app.post('/saveteam', async (req: Request, res: Response) => {
     return res.status(404).json({ status: "error", title: "No Team received", text: "" })
   }
   console.log(req.body)
-  console.log(team)
+  if (req.body.email === undefined) {
+    console.error("THERE IS NO EMAIL")
+  }
   const result = await dbAccess.saveTeam(team, email)
   const saveTeam: SaveTeamFormat = {
     team_id: team.name,

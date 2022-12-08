@@ -1,11 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { isMobile } from "react-device-detect";
-import { Player } from "../../../server/types/Player"
-import { Team } from "../../../server/types/Team"
+import { Player } from "../types/Player"
+import { Team } from "../types/Team"
 import { useToast } from "@chakra-ui/react"
-import { tryFindPlayer, trySaveTeam, tryLoadTeam, tryLoadTeamMetadata } from "../utils/DataUtils"
-import { PlayerQueryResponse } from "../../../server/types/PlayerQueryResponse"
-import { SQLsearchterm } from "../../../server/types/QueryRequest"
+import { trySaveTeam, tryLoadTeam, tryLoadTeamMetadata } from "../utils/DataUtils"
 import generateTeamName from "../utils/TeamNameGenerator"
 import { useAppContext } from "./AppContext";
 import { useUserContext } from "./UserContext";

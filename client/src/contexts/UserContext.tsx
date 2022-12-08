@@ -1,10 +1,9 @@
-import { User } from "../../../server/types/User"
+import { User } from "../types/User"
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { isMobile } from "react-device-detect";
 import { tryGetUser, tryCreateNewUser, tryFindRoom } from "../utils/DataUtils"
 import { useToast } from "@chakra-ui/react"
-import { UserQueryResponse } from "../../../server/types/UserQueryResponse";
-import { createRoutesFromChildren } from "react-router-dom";
+import { UserQueryResponse } from "../types/UserQueryResponse";
 interface ContextType {
   user: User | null;
   createNewUser: (user: User) => void;

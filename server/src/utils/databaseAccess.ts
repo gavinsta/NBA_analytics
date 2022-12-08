@@ -158,10 +158,10 @@ function createQueryStringFromSearchTerm(searchTerm: SQLsearchterm, stat: "avg" 
 
   let orderby = 'DESC'
 
-  if (searchTerm.comparator == "<" || searchTerm.comparator == "<=") {
+  if (searchTerm.comparator == ">" || searchTerm.comparator == ">=") {
     orderby = 'ASC'
   }
-  query = query.concat(` AND stat = \"${stat}\" ORDER BY ${searchTerm.term} ${orderby} LIMIT 10`)
+  query = query.concat(` AND stat = \"${stat}\" ORDER BY ${searchTerm.term} ${orderby} LIMIT 20`)
   console.log(`Query Created: ${query}`)
   return query;
 }
@@ -365,7 +365,9 @@ export async function saveTeam(team: Team, email: string): Promise<{ status: str
       }
     }
     queryArguments.push(team.owner)
-    if (queryResults.teamExists) {
+    console.log(`Team Exists:`)
+    console.log(queryResults[0].teamExists)
+    if (queryResults[0].teamExists == 1) {
       //if team exists, replace it
       var insertionQuery = "Replace into teams (team_id,team_name,year,budget,player1,player2,player3,player4,player5,player6,player7,player8,player9,player10,player11,player12,player13,player14,player15,owner) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
       var result = await conn.query(insertionQuery, queryArguments)
@@ -385,7 +387,7 @@ export async function saveTeam(team: Team, email: string): Promise<{ status: str
     }
 
     //finally update the user's record
-    var updateQuery = "Update NBA_APP.users SET team_id = ?, WHERE email = ?"
+    var updateQuery = "Update NBA_APP.users SET team_id = ? WHERE email = ?"
     var result = await conn.query(updateQuery, [team.name + "-" + team.owner, email])
 
   }

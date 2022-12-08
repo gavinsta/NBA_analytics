@@ -67,6 +67,9 @@ const PlayerStatsDisplay = ({ player }: PlayerDataDisplayProps) => {
         <Text>
           Defensive Rebounds {player.DRB.toFixed(2)}
         </Text>
+        <Text>
+          Total Rebounds {player.TRB.toFixed(2)}
+        </Text>
       </Stack>
 
       <Stack

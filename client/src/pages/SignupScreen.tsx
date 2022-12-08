@@ -63,13 +63,14 @@ const SignupScreen: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <Stack
+          color={"white"}
           w={"100%"}
         >
           <Heading color={"white"}>
             Sign up and create your dream team
           </Heading>
           <Input
-            bg={"white"}
+
             placeholder="Name"
             type="name"
             required
@@ -78,7 +79,7 @@ const SignupScreen: React.FC = () => {
             onChange={handleChange}
           />
           <Input
-            bg={"white"}
+
             placeholder="Email"
             type="email"
             required
@@ -87,7 +88,7 @@ const SignupScreen: React.FC = () => {
             onChange={handleChange}
           />
           <Input
-            bg={"white"}
+
             placeholder="Password"
             type='password'
             required
@@ -103,7 +104,7 @@ const SignupScreen: React.FC = () => {
             Passwords don't match!
           </Alert> : <></>}
           <Input
-            bg={"white"}
+
             placeholder="Confirm Password"
             type='password'
             required

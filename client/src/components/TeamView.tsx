@@ -5,7 +5,7 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  useDisclosure, Box, Button, ButtonGroup, Heading, HStack, Input, Stack, Text, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, PopoverFooter, Container, Center
+  useDisclosure, Box, Button, ButtonGroup, Heading, HStack, Input, Stack, Text, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverHeader, PopoverTrigger, PopoverFooter, Container, Center, Spacer
 } from "@chakra-ui/react";
 import RosterView from "./team_components/RosterView";
 import GameSimulatorView from "./simulator/GameSimulatorView";
@@ -32,21 +32,29 @@ const TeamView: React.FC = () => {
         {!teamName ? setTeamName(generateTeamName()) : <></>}
         <Center h={"70vh"}>
           <Container
+            h={"80%"}
             pt={10}
             color='white' bg='blackAlpha.800' borderColor='blue.800'>
-            <Heading pt={4} fontWeight='bold' border='0'>
-              Your team will be:
-            </Heading><Heading fontSize={60} display={"inline-flex"}>{teamName}</Heading>
-            <Text>
-              If you're happy with this name, let's get to drafting. Otherwise, you can still change it.
-            </Text>
+            <Container
+              h={"60%"}>
+              <Heading pt={4} fontWeight='bold' border='0'>
+                Your team will be:
+              </Heading>
+              <Heading fontSize={60} display={"inline-flex"}>{teamName}</Heading>
+            </Container>
+
+
 
             <Stack
-              display='flex'
+              display='block'
               alignItems='center'
               justifyContent='space-between'
               pb={4}
               width={"100%"}>
+              <Text>
+                If you're happy with this name, let's get to drafting. Otherwise, you can still change it.
+              </Text>
+              <Spacer />
               <Button
                 width={"100%"}
                 padding={1}

@@ -55,6 +55,7 @@ const LoginScreen: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <Stack
+          color={"white"}
           spacing={"15px"}>
           <Heading
             color={"white"}>

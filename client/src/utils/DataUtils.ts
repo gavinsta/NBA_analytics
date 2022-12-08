@@ -115,15 +115,16 @@ export const trySaveTeam = async (
 ): Promise<{ status: "error" | "success", title: string, text: string }> => {
   try {
     const teamString = JSON.stringify(team)
-    console.log(teamString)
+    const contents = { team, email }
+    console.log(contents)
     const res = await fetch(url + "/saveteam", {
       method: 'Post',
       headers: {
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ "team": team, "email": email })
+      body: JSON.stringify(contents)
     });
-    console.log("package away")
+    console.log("package away 2")
     return await res.json();
   }
   catch (err) {
