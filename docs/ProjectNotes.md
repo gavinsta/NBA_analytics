@@ -2,6 +2,8 @@
 Removing something from the repo, but not locally:
 https://stackoverflow.com/questions/6313126/how-do-i-remove-a-directory-from-a-git-repository
 
+## Deploy to git pages
+https://github.com/gitname/react-gh-pages
 # Webapp notes
 
 ## Typescript Reference
@@ -49,6 +51,40 @@ lsof -i tcp:3000
 
 - Honeybadger.io
 
+# Docker 
+
+## Accessing
+
+### Manually accessing Server through Docker:
+```console
+docker exec -it {CONTAINER_NAME} mariadb --user root -p{PASSWORD}
+```
+
+The above returned: `172.17.0.2` for our server.
+
+Excerpt [from the MariaDB docs:](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/)
+>After enabling network connections in MariaDB as described above, we will be able to connect to the server from outside the container.
+
+>On the host, run the client and set the server address ("-h") to the container's IP address that you found in the previous step:
+>```
+>mysql -h 172.17.0.2 -u root -p
+>```
+>This simple form of the connection should work in most situations. Depending on your configuration, it may also be necessary to specify the port for the server or to force TCP mode:
+>```
+>mysql -h 172.17.0.2 -P 3306 --protocol=TCP -u root -p
+>```
+### Connecting from outside the container
+Find the IP address:
+```console
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadbtest
+```
+## Database management
+### Uploading data to MariaDB Container
+```
+docker exec -i mysql-container mysql -uuser -ppassword name_db < data.sql
+```
+From: https://stackoverflow.com/questions/43880026/import-data-sql-mysql-docker-container
+
 # MariaDB/SQL
 
 ## Setup 
@@ -74,29 +110,6 @@ PASSWORD: `mypass`
 USER: `app`
 PASSWORD: `not@$ecret`
 
-### Manually accessing Server through Docker:
-```console
-docker exec -it {CONTAINER_NAME} mariadb --user root -p{PASSWORD}
-```
-
-The above returned: `172.17.0.2` for our server.
-
-Excerpt [from the MariaDB docs:](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/)
->After enabling network connections in MariaDB as described above, we will be able to connect to the server from outside the container.
-
->On the host, run the client and set the server address ("-h") to the container's IP address that you found in the previous step:
->```
->mysql -h 172.17.0.2 -u root -p
->```
->This simple form of the connection should work in most situations. Depending on your configuration, it may also be necessary to specify the port for the server or to force TCP mode:
->```
->mysql -h 172.17.0.2 -P 3306 --protocol=TCP -u root -p
->```
-### Connecting from outside the container
-Find the IP address:
-```console
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadbtest
-```
 
 ## Starting and Stopping the server:
 

@@ -18,7 +18,6 @@
     "nodemon": "^2.0.20"
   },
   "scripts": {
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q src/index.ts\"",
     "start": "node dist/src/index.js",
     "build": "tsc"
   }
