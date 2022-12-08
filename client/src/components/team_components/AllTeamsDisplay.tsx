@@ -1,7 +1,6 @@
 import { Alert, AlertIcon, Box, Button, ButtonGroup, HStack, Icon, Stack, Text, Tooltip, useStatStyles } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { SaveTeamFormat } from "../../../../server/types/SaveTeamFormat";
-import { useAppContext } from "../../contexts/AppContext";
 import { getAllTeams, collectPlayerNames } from "../../utils/DataUtils"
 import { GiMoneyStack } from "react-icons/gi";
 import Money from "../../components/styled_components/Money";
@@ -15,7 +14,6 @@ const AllTeamsDisplay = ({
 }) => {
   const [isThrottled, setThrottled] = useState<boolean>(false)
   const [allTeamFormats, setAllTeamFormats] = useState<SaveTeamFormat[]>([])
-  const { URL } = useAppContext();
   const [selectedTeam, setSelectedTeam] = useState<SaveTeamFormat | null>(null)
   const [secondsWaiting, setSecondsWaiting] = useState(0);
   useEffect(() => {
@@ -33,7 +31,7 @@ const AllTeamsDisplay = ({
     };
   });
   async function loadAllTeams() {
-    const results = await getAllTeams(URL)
+    const results = await getAllTeams()
     if (results.teams.length > 0) {
       setAllTeamFormats(results.teams)
     }

@@ -1,12 +1,13 @@
-import dotenv from "dotenv";
+
+//TODO GARBAGE REMOVE THIS
 import React, { createContext, useState, useContext } from "react";
 import { isMobile } from "react-device-detect";
 interface ContextType {
-  URL: string
+
 }
 
 export const AppContext = createContext<ContextType>({
-  URL: "",
+
 });
 
 export const AppContextProvider: React.FC<{
@@ -17,7 +18,7 @@ export const AppContextProvider: React.FC<{
   return (
     <AppContext.Provider
       value={{
-        URL
+
       }}
     >
       {children}

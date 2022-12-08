@@ -21,7 +21,6 @@ import { GameOutcome } from "../../../../server/types/GameOutcome";
 import AllTeamsDisplay from "../team_components/AllTeamsDisplay";
 import { SaveTeamFormat } from "../../../../server/types/SaveTeamFormat";
 import { collectPlayerNames, currentBudget, currentContractPrices, getTeamID, tryLoadTeam, tryLoadTeamMetadata } from "../../utils/DataUtils";
-import { useAppContext } from "../../contexts/AppContext";
 import { Player } from "../../../../server/types/Player";
 import GameOutcomeDisplay from "./GameOutcomeDisplay";
 import Money from "../styled_components/Money";
@@ -34,7 +33,6 @@ const GameSimulatorView: React.FC = () => {
   const [opponentOutcomes, setOpponentOutcomes] = useState<GameOutcome[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { team, playerMetas } = useFantasyTeam();
-  const { URL } = useAppContext();
   const [isThrottled, setThrottled] = useState<boolean>(false);
   const [secondsWaiting, setSecondsWaiting] = useState(0);
   useEffect(() => {
@@ -126,7 +124,7 @@ const GameSimulatorView: React.FC = () => {
   }
 
   async function loadOpponentTeam(teamFormat: SaveTeamFormat): Promise<{ team: Team, metas: Player[] }> {
-    const result = await tryLoadTeam(URL, teamFormat.team_id)
+    const result = await tryLoadTeam(teamFormat.team_id)
 
     console.log(result.team)
     let team: Team | null = null;
@@ -145,7 +143,7 @@ const GameSimulatorView: React.FC = () => {
   }
   async function loadOpponentTeamMeta(team: Team): Promise<Player[]> {
     //TODO the meta data here is being retrieved by TEAM NAME not TEAM_ID woops
-    const result = await tryLoadTeamMetadata(URL, getTeamID(team))
+    const result = await tryLoadTeamMetadata(getTeamID(team))
     console.log(result)
     if (result.status == "success") {
       return result.metaDatas;

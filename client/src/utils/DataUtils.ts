@@ -84,7 +84,6 @@ export const tryFindRoom = async (
 }
 
 export const tryFindPlayer = async (
-  url: string,
   search: SQLsearchterm
 )
   : Promise<PlayerQueryResponse> => {
@@ -93,7 +92,7 @@ export const tryFindPlayer = async (
   try {
     const messageBody = { type: type, term: term, comparator: comparator.toString(), value: value }
     console.log(messageBody)
-    const res = await fetch(url, {
+    const res = await fetch("/search", {
       method: 'Post',
       headers: {
         'Content-type': 'application/json'
@@ -109,7 +108,6 @@ export const tryFindPlayer = async (
 }
 
 export const trySaveTeam = async (
-  url: string,
   team: Team,
   email: string,
 ): Promise<{ status: "error" | "success", title: string, text: string }> => {
@@ -117,7 +115,7 @@ export const trySaveTeam = async (
     const teamString = JSON.stringify(team)
     const contents = { team, email }
     console.log(contents)
-    const res = await fetch(url + "/saveteam", {
+    const res = await fetch("/saveteam", {
       method: 'Post',
       headers: {
         'Content-type': 'application/json'
@@ -134,11 +132,10 @@ export const trySaveTeam = async (
 }
 
 export const tryLoadTeam = async (
-  url: string,
   team_id: string
 ): Promise<{ status: "error" | "success", title: string, text: string, team: Team | null }> => {
   try {
-    const res = await fetch(url + "/loadteam", {
+    const res = await fetch("/loadteam", {
       method: 'Post',
       headers: {
         'Content-type': 'application/json'
@@ -155,12 +152,11 @@ export const tryLoadTeam = async (
 }
 
 export const tryLoadTeamMetadata = async (
-  url: string,
   team_id: string
 ): Promise<{ status: "error" | "success", title: string, text: string, metaDatas: Player[] }> => {
 
   try {
-    const res = await fetch(url + "/loadteammetadata", {
+    const res = await fetch("/loadteammetadata", {
       method: 'Post',
       headers: {
         'Content-type': 'application/json'
@@ -180,9 +176,9 @@ export const tryLoadTeamMetadata = async (
   }
 }
 
-export const getAllTeams = async (url: string): Promise<{ status: "error" | "success", title: string, text: string, teams: SaveTeamFormat[] }> => {
+export const getAllTeams = async (): Promise<{ status: "error" | "success", title: string, text: string, teams: SaveTeamFormat[] }> => {
   try {
-    const res = await fetch(url + "/allteams", {
+    const res = await fetch("/allteams", {
       method: 'Get',
       headers: {
         'Content-type': 'application/json'

@@ -41,7 +41,7 @@ export const UserContextProvider: React.FC<{
 
   const createNewUser = async (newUser: User) => {
     const res: UserQueryResponse = await tryCreateNewUser(
-      URL + "/signup", newUser
+      "/signup", newUser
     )
 
     if (res.status === "error") {
@@ -64,7 +64,7 @@ export const UserContextProvider: React.FC<{
 
   const login = async (email: string, password: string): Promise<User | null> => {
     const res: (UserQueryResponse) = await tryGetUser(
-      URL + "/login", email, password
+      "/login", email, password
     )
     if (res.status === "error") {
       toast({
@@ -102,7 +102,7 @@ export const UserContextProvider: React.FC<{
   const joinRoom = async (roomCode: string) => {
     if (user) {
       const res = await tryFindRoom(
-        URL + "/joinroom", roomCode, user.email
+        "/joinroom", roomCode, user.email
       )
       if (res.status === "error") {
         toast({
@@ -127,7 +127,7 @@ export const UserContextProvider: React.FC<{
   const createRoom = async (roomCode: string) => {
     if (user) {
       const res = await tryFindRoom(
-        URL + "/createroom", roomCode, user.email
+        "/createroom", roomCode, user.email
       )
       if (res.status === "error") {
         toast({

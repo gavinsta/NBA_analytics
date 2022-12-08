@@ -8,7 +8,6 @@ import { Player } from "../types/Player"
 import { SQLsearchterm } from "../types/QueryRequest"
 import { PlayerQueryResponse } from "../types/PlayerQueryResponse"
 import { tryFindPlayer } from "../utils/DataUtils"
-import { useAppContext } from "../contexts/AppContext"
 import { MdPersonSearch } from "react-icons/md"
 import { currentBudget } from "../utils/DataUtils"
 import IconHeader from "./styled_components/IconHeader"
@@ -19,7 +18,6 @@ const PlayerSearchView = () => {
   const { team, addPlayer, viewPlayer, checkAvailability } = useFantasyTeam();
   const [queriedPlayers, setQueriedPlayers] = useState<Player[]>([])
   const [queriedPlayerMetas, setQueriedPlayerMetas] = useState<Player[]>([])
-  const { URL } = useAppContext();
 
   const toast = useToast();
   const submitSearch = async (search: SQLsearchterm) => {
@@ -27,7 +25,7 @@ const PlayerSearchView = () => {
 
     console.log(search)
     const res: PlayerQueryResponse = await tryFindPlayer(
-      URL + "/search", search
+      search
     )
     console.log(res)
     if (res.status === "error") {

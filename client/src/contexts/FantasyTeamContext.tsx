@@ -5,7 +5,6 @@ import { Team } from "../types/Team"
 import { useToast } from "@chakra-ui/react"
 import { trySaveTeam, tryLoadTeam, tryLoadTeamMetadata } from "../utils/DataUtils"
 import generateTeamName from "../utils/TeamNameGenerator"
-import { useAppContext } from "./AppContext";
 import { useUserContext } from "./UserContext";
 interface ContextType {
   team: Team | null;
@@ -42,7 +41,6 @@ export const FantasyTeamContext = createContext<ContextType>({
 export const FantasyTeamProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { URL } = useAppContext();
   const [team, setTeam] = useState<Team | null>(null);
   const { user } = useUserContext();
   const toast = useToast();
@@ -77,7 +75,7 @@ export const FantasyTeamProvider: React.FC<{
   }
   async function saveTeam() {
     if (team && user) {
-      const result = await trySaveTeam(URL, team, user.email)
+      const result = await trySaveTeam(team, user.email)
       toast({
         status: result.status,
         title: result.title,
@@ -94,7 +92,7 @@ export const FantasyTeamProvider: React.FC<{
   }
 
   async function loadTeam(team_id: string): Promise<Team | null> {
-    const result = await tryLoadTeam(URL, team_id)
+    const result = await tryLoadTeam(team_id)
     toast({
       status: result.status,
       title: result.title,
@@ -104,7 +102,7 @@ export const FantasyTeamProvider: React.FC<{
       setTeam(result.team)
       setBudget(result.team.budget)
 
-      const metaResult = await tryLoadTeamMetadata(URL, team_id)
+      const metaResult = await tryLoadTeamMetadata(team_id)
       if (metaResult.status == "success") {
         setPlayerMetas(metaResult.metaDatas)
       }
