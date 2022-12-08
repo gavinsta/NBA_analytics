@@ -1,5 +1,6 @@
 
 import mariadb from "mariadb"
+import dotenv from "dotenv";
 import { User } from "../../types/User"
 import { Player } from "../../types/Player"
 import { UserQueryResponse } from "../../types/UserQueryResponse"
@@ -7,7 +8,7 @@ import { PlayerQueryResponse } from "../../types/PlayerQueryResponse"
 import { SQLsearchterm } from "../../types/QueryRequest"
 import { Team } from "../../types/Team"
 import { SaveTeamFormat } from "../../types/SaveTeamFormat"
-
+dotenv.config();
 let port = 3306
 if (process.env.DB_PORT) {
   port = parseInt(process.env.DB_PORT)
@@ -17,8 +18,8 @@ const pool = mariadb.createPool({
   //In production we will use the docker container address
   host: process.env.DB_HOST,
   port: port,
-  user: "app",
-  password: "not@$ecret",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
   database: "NBA_APP"
 })
 

@@ -33,14 +33,21 @@ NBA API: https://www.npmjs.com/package/nba-api-client
 Hexmap Creation: 
 - https://naughty-neumann-fb4b06.netlify.app/player/lebron
 - https://github.com/yuriihorodnyi21/NBA-Stas-Dashboard/blob/main/src/components/ShotCharts.js
-## Server-side
+
+# Server Environment
+
+Set environment variables
+```
+export NAME=VALUE
+```
 
 
+
+
+# Server-Node.js
 
 ExpressJS reference:
 https://expressjs.com/en/guide/routing.html
-
-# Server
 
 To kill a Node.js process:
 ```
@@ -60,6 +67,12 @@ lsof -i tcp:3000
 docker exec -it {CONTAINER_NAME} mariadb --user root -p{PASSWORD}
 ```
 
+
+### Connecting from outside the container
+Find the IP address:
+```console
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadbtest
+```
 The above returned: `172.17.0.2` for our server.
 
 Excerpt [from the MariaDB docs:](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/)
@@ -73,11 +86,7 @@ Excerpt [from the MariaDB docs:](https://mariadb.com/kb/en/installing-and-using-
 >```
 >mysql -h 172.17.0.2 -P 3306 --protocol=TCP -u root -p
 >```
-### Connecting from outside the container
-Find the IP address:
-```console
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadbtest
-```
+
 ## Database management
 ### Uploading data to MariaDB Container
 ```

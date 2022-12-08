@@ -20,16 +20,16 @@ app.use(express.json())
 const PORT = process.env.PORT || 8080;
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../../client/build')));
+  app.use(express.static(path.join(__dirname, '../../client/build')));
 
   app.get('/home', function (req: Request, res: Response) {
-    res.sendFile(path.join(__dirname, '../../../client/build', 'index.html'));
+    res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
   });
 
 }
 else {
   app.get('/', (req: Request, res: Response) => {
-    res.send('<h1>Server is in development mode!</h1>')
+    res.send(`<h1>Server is in development mode!</h1><h2>NODE_ENV: ${process.env.NODE_ENV} <br/> DB_HOST: ${process.env.DB_HOST}</h2>`)
   });
 }
 app.post('/login', async (req: Request, res: Response) => {
