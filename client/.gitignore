@@ -25,3 +25,6 @@ yarn-debug.log*
 yarn-error.log*
 
 debug.log
+
+#ignore .env REACT_APP variables
+.env
