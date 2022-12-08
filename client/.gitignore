@@ -13,8 +13,8 @@ tmp/
 #analytics (ignore atm)
 data_analyticis
 
-# production
-/build
+# production (we are including build in the end... it was too slow to build online)
+#/build
 /out
 
 # misc
