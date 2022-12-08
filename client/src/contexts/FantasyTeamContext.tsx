@@ -3,11 +3,12 @@ import { isMobile } from "react-device-detect";
 import { Player } from "../../../server/types/Player"
 import { Team } from "../../../server/types/Team"
 import { useToast } from "@chakra-ui/react"
-import { trySearchDatabase, trySaveTeam, tryLoadTeam, tryLoadTeamMetadata } from "../utils/DataUtils"
+import { tryFindPlayer, trySaveTeam, tryLoadTeam, tryLoadTeamMetadata } from "../utils/DataUtils"
 import { PlayerQueryResponse } from "../../../server/types/PlayerQueryResponse"
 import { SQLsearchterm } from "../../../server/types/QueryRequest"
 import generateTeamName from "../utils/TeamNameGenerator"
 import { useAppContext } from "./AppContext";
+import { useUserContext } from "./UserContext";
 interface ContextType {
   team: Team | null;
   playerMetas: Player[];
@@ -16,7 +17,6 @@ interface ContextType {
   loadTeam: (team_id: string) => Promise<Team | null>;
   clearTeam: () => void;
   checkBudget: (cost: number) => boolean;
-  currentBudget: () => number;
   budget: number;
   addPlayer: (player: Player, meta: Player) => void;
   removePlayer: (player: Player) => void;
@@ -33,7 +33,6 @@ export const FantasyTeamContext = createContext<ContextType>({
   loadTeam: async () => { return null },
   clearTeam: () => { },
   checkBudget: () => { return false },
-  currentBudget: () => { return 0 },
   budget: 0,
   addPlayer: () => { },
   removePlayer: () => { },
@@ -47,7 +46,7 @@ export const FantasyTeamProvider: React.FC<{
 }> = ({ children }) => {
   const { URL } = useAppContext();
   const [team, setTeam] = useState<Team | null>(null);
-
+  const { user } = useUserContext();
   const toast = useToast();
   const [budget, setBudget] = useState<number>(0)
   const [playerMetas, setPlayerMetas] = useState<Player[]>([])
@@ -59,19 +58,28 @@ export const FantasyTeamProvider: React.FC<{
     }
   }, [])
   function createNewTeam(name?: string | null) {
-    const newTeam: Team = {
-      name: generateTeamName(),
-      roster: [],
-      budget: 140000000,
-      year: 2022,
-
+    if (user) {
+      const newTeam: Team = {
+        name: name ? name : generateTeamName(),
+        roster: [],
+        budget: 140000000,
+        year: 2022,
+        owner: user ? user.name : "None"
+      }
+      setTeam(newTeam)
+      setBudget(newTeam.budget)
     }
-    setTeam(newTeam)
-    setBudget(newTeam.budget)
+
+    else {
+      toast({
+        status: "error",
+        title: "Cannot create a new team without a user!"
+      })
+    }
   }
   async function saveTeam() {
-    if (team) {
-      const result = await trySaveTeam(URL, team)
+    if (team && user) {
+      const result = await trySaveTeam(URL, team, user.email)
       toast({
         status: result.status,
         title: result.title,
@@ -118,16 +126,7 @@ export const FantasyTeamProvider: React.FC<{
     else return true;
   }
 
-  function currentBudget(): number {
-    if (team) {
-      let price: number = 0;
-      for (var player of team.roster) {
-        price = price + +player.ContractPrice;
-      }
-      return team.budget - price;
-    }
-    else return 140000000;
-  }
+
 
   function checkAvailability(player: Player): "available" | "unavailable" | "nobudget" {
 
@@ -178,7 +177,6 @@ export const FantasyTeamProvider: React.FC<{
         loadTeam,
         clearTeam,
         checkBudget,
-        currentBudget,
         budget,
         addPlayer,
         removePlayer,

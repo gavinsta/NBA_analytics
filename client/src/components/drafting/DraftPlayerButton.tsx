@@ -7,7 +7,7 @@ import {
   useDisclosure,
   Button, IconButton,
 
-  ButtonProps as ChakraButtonProps, forwardRef, HStack, Stack, Spacer, Text, ButtonGroup, Icon, Tooltip, Alert
+  ButtonProps as ChakraButtonProps, forwardRef, HStack, Stack, Spacer, Text, ButtonGroup, Icon, Tooltip, Alert, Container
 } from "@chakra-ui/react";
 import { Player } from "../../../../server/types/Player";
 import { useFantasyTeam } from "../../contexts/FantasyTeamContext";
@@ -16,6 +16,7 @@ import { GiMoneyStack } from "react-icons/gi";
 import { ImStatsDots } from "react-icons/im"
 import { useState, useRef } from "react";
 import Money from "../styled_components/Money";
+import PlayerStatsDisplay from "../PlayerStatsDisplay";
 // "available" | "unavailable" | "nobudget"
 export type DraftPlayerButtonProps = ChakraButtonProps & {
   player: Player;
@@ -27,8 +28,8 @@ export type DraftPlayerButtonProps = ChakraButtonProps & {
 const DraftPlayerButton: React.FC<DraftPlayerButtonProps> = ({ player, statusText, status, addPlayer, viewPlayer }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
-
-  return <HStack
+  const [viewStats, setViewStats] = useState<boolean>(false)
+  return <Stack><HStack
     borderRadius={10}
     bg="#ff9933"
     padding={2}
@@ -55,7 +56,8 @@ const DraftPlayerButton: React.FC<DraftPlayerButtonProps> = ({ player, statusTex
     <Spacer />
     <Money
       fontSize={20}
-      width={"15%"}
+      minWidth={"fit-content"}
+      maxWidth={"20%"}
       value={+player.ContractPrice}
     />
 
@@ -117,13 +119,17 @@ const DraftPlayerButton: React.FC<DraftPlayerButtonProps> = ({ player, statusTex
           aria-label="View Player Stats"
           icon={<ImStatsDots />}
           onClick={() => {
+            setViewStats(viewStats => !viewStats)
             console.log(`Viewing ${player.PlayerName}`)
           }}
-        >
-        </IconButton>
+        />
       </Tooltip>
     </ButtonGroup>
   </HStack >
+    {viewStats ? <HStack>
+      <PlayerStatsDisplay player={player} />
+    </HStack> : <></>}
+  </Stack>
 }
 
 export default DraftPlayerButton;

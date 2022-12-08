@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react"
 import { User } from "../../../server/types/User"
-import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Alert, AlertIcon } from "@chakra-ui/react";
+import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Alert, AlertIcon, Heading, HStack } from "@chakra-ui/react";
 import { useUserContext } from "../contexts/UserContext";
 import { Navigate } from "react-router-dom";
 const defaultFormFields = {
@@ -55,7 +55,7 @@ const SignupScreen: React.FC = () => {
   }
   return (
     <Center
-      bg={"lightgrey"}
+      bg={"blackAlpha.800"}
       height={"80vh"}
       alignContent={"center"}>
       {renderRedirect()}
@@ -63,10 +63,11 @@ const SignupScreen: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <Stack
+          w={"100%"}
         >
-          <Text>
-            Sign up to create your own fantasy simulator NBA team!
-          </Text>
+          <Heading color={"white"}>
+            Sign up and create your dream team
+          </Heading>
           <Input
             bg={"white"}
             placeholder="Name"
@@ -110,11 +111,19 @@ const SignupScreen: React.FC = () => {
             value={confirm_password}
             onChange={handleChange}
           />
-          <ButtonGroup
-            colorScheme={"orange"}>
-            <Button type="submit">Sign me up!</Button>
-            <Button type="button" onClick={resetFormFields}>Clear</Button>
-          </ButtonGroup>
+          <HStack
+            justifyContent={"center"}
+
+          >
+            <ButtonGroup
+              colorScheme={"orange"}>
+              <Button type="submit">Sign me up!</Button>
+              <Button
+
+                type="button" onClick={resetFormFields}>Clear</Button>
+            </ButtonGroup>
+          </HStack>
+
         </Stack>
       </form>
     </Center>);

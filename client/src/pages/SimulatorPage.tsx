@@ -1,8 +1,8 @@
 import { Tab, Tabs, TabList, TabPanels, TabPanel, Text, Icon, Spacer, Tooltip } from '@chakra-ui/react'
 import TeamView from '../components/TeamView'
-import StatisticsDisplay from '../components/StatisticsDisplay'
+import StatisticsView from '../components/StatisticsView'
 import { Navigate } from 'react-router-dom'
-import AllTeamsDisplay from '../components/AllTeamsDisplay'
+import AllTeamsDisplay from '../components/team_components/AllTeamsDisplay'
 import { useUserContext } from '../contexts/UserContext'
 import { BsPlayCircle } from "react-icons/bs"
 import { JerseyIcon } from '../additional_resources/jerseyIcon'
@@ -71,10 +71,9 @@ export default function MainSimulatorPage() {
             <TeamView />
           </TabPanel>
           <TabPanel>
-            <StatisticsDisplay />
+            <StatisticsView />
           </TabPanel>
           <TabPanel>
-            <AllTeamsDisplay />
             <GameSimulatorView />
           </TabPanel>
         </TabPanels>

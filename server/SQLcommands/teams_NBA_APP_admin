@@ -53,5 +53,51 @@ CREATE OR REPLACE TABLE NBA_APP.teams(
     player12 VARCHAR(50),
     player13 VARCHAR(50),
     player14 VARCHAR(50),
-    player15 VARCHAR(50)
+    player15 VARCHAR(50),
+    owner VARCHAR(50)
+  );
+--@block insert a new team:
+INSERT INTO teams (
+    team_id,
+    team_name,
+    year,
+    budget,
+    player1,
+    player2,
+    player3,
+    player4,
+    player5,
+    player6,
+    player7,
+    player8,
+    player9,
+    player10,
+    player11,
+    player12,
+    player13,
+    player14,
+    player15,
+    owner
+  )
+VALUES (
+    "Gifted Goats-Vardaan",
+    "Gifted Goats",
+    2022,
+    140000000,
+    "Luka Dončić",
+    "Nikola Jokić",
+    "Grant Williams",
+    "Jaylen Brown",
+    "Saddiq Bey",
+    "Dejounte Murray",
+    "Darius Garland",
+    "Desmond Bane",
+    "Alperen Şengün",
+    "Zeke Nnaji",
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    "Vardaan"
   );

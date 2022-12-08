@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom"
-import { Alert, Box, Button, ButtonGroup, Center, Heading, Icon, Input, Spacer, Stack, Text, Tooltip } from "@chakra-ui/react"
+import { Alert, Box, Button, ButtonGroup, Center, Heading, HStack, Icon, Input, Spacer, Stack, Text, Tooltip } from "@chakra-ui/react"
 import { Link } from "react-router-dom"
 import { GiBasketballBall, GiBasketballBasket } from "react-icons/gi"
 import { useUserContext } from "../contexts/UserContext"
 import { useFantasyTeam } from "../contexts/FantasyTeamContext";
 import Court from "../components/Court";
 import NBAcourt from "../tmp/NBAcourt";
+import { motion } from "framer-motion";
 const Home: React.FC = () => {
 
   const { user, logout, createRoom, joinRoom } = useUserContext();
@@ -19,8 +20,11 @@ const Home: React.FC = () => {
 
           <Tooltip
             label="We're working on this feature!"
+            placement="right-end"
           >
             <Button
+              bg={"gray"}
+              width={"100%"}
               disabled={true}
             //TODO leave room
             >
@@ -71,48 +75,46 @@ const Home: React.FC = () => {
       )
   }
   function renderOptions() {
-    if (user) {
-      return (
-        <ButtonGroup
-          alignSelf={"center"}
-          colorScheme={"orange"}
-          variant={"solid"}>
-          <Button
-            onClick={() => {
-              logout();
-              clearTeam();
-            }}>
-            Log Out
-          </Button>
-        </ButtonGroup>
-      )
-    }
-    else {
-      return (
-        <ButtonGroup
-          alignSelf={"center"}
-          colorScheme={"orange"}>
-          <Link to='/signupPage' >
-            <Button>
-              Sign Up
-            </Button>
-          </Link>
 
-          <Link to='/loginPage'>
-            <Button>
-              Log In
-            </Button>
-          </Link>
-        </ButtonGroup>
-      )
-    }
+    return (
+      <ButtonGroup
+        width={"100%"}
+        alignSelf={"center"}
+        colorScheme={"orange"}
+        variant={"solid"}>
+        <Stack w={"10em"}>
+          {user ?
+            <Button
+              onClick={() => {
+                logout();
+                clearTeam();
+              }}>
+              Log Out
+            </Button> : <><Link to='/signupPage' >
+              <Button
+                w={"100%"}>
+                Sign Up
+              </Button>
+            </Link>
+
+              <Link to='/loginPage'>
+                <Button w={"100%"}>
+                  Log In
+                </Button>
+              </Link></>}</Stack>
+      </ButtonGroup>
+    )
   }
+
+
   return (
     <Box
       alignContent={"center"}>
-      <Center>
+      <Center
+        bg={"blackAlpha.800"}
+        pt={40}>
         <Stack
-          height={"35%"}
+          height={"100%"}
           width={"50%"}
           alignItems='center'
           justifyContent='center'
@@ -120,36 +122,52 @@ const Home: React.FC = () => {
 
 
           <Heading
+            color={"white"}
             textAlign={"center"}
             as='h3'>
             The Data Nerds present:
           </Heading>
-          <Heading
-            as='h1'
+          <HStack
+            justifyContent={"center"}
+            width={"100%"}
+            fontSize={100}
             textAlign={"center"}
             color={"orange"}>
             <Icon as={GiBasketballBasket}
             //color="orange"
             />
-            NBA Fantasy Simulator
-            <Icon as={GiBasketballBall}
-            //color="orange"
-            />
-          </Heading>
+
+
+            <Heading
+              fontSize={100}
+            >
+              NBA Fantasy Simulator
+            </Heading><motion.div
+              whileHover={{
+                scale: [1, .3, 1.7, 1, 1.5, 1, 1.2, 1],
+                rotateY: [12, 0, -6, 4, 8, 10, 12]
+
+              }}
+              transition={{
+                type: "spring",
+                duration: 2
+              }}
+            >
+              <Icon as={GiBasketballBall}
+              //color="orange"
+              />
+            </motion.div>
+          </HStack>
+
 
         </Stack>
       </Center>
       <Spacer
-        height={100} />
+        height={"1rem"} />
       <Text
         fontSize={"24"}
         textAlign={"center"}>
-
-        {user && `Welcome ${user.name}`}
-      </Text>
-      <Text
-        textAlign={"center"}>
-        {user?.team_id ? `and the ${user.team_id}` : `No Team Yet!`}
+        {user?.team_id ? `and the ${user.team_id}` : ""}
       </Text>
 
       <Center

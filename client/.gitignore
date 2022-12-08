@@ -11,7 +11,7 @@
 tmp/
 
 #analytics (ignore atm)
-/data_analyticis
+data_analyticis
 
 # production
 /build

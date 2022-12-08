@@ -20,15 +20,16 @@ app.use(express.json())
 const PORT = process.env.PORT || 8080;
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../../client/build')));
+  app.use(express.static(path.join(__dirname, '../../../client/build')));
 
-  app.get('/*', function (req: Request, res: Response) {
-    res.sendFile(path.join(__dirname, '../../client/build', 'index.html'));
+  app.get('/home', function (req: Request, res: Response) {
+    res.sendFile(path.join(__dirname, '../../../client/build', 'index.html'));
   });
+
 }
 else {
   app.get('/', (req: Request, res: Response) => {
-    res.send('<h1>Hello World From the Typescript Server!</h1>')
+    res.send('<h1>Server is in development mode!</h1>')
   });
 }
 app.post('/login', async (req: Request, res: Response) => {
@@ -90,7 +91,7 @@ app.post('/search', async (req: Request, res: Response) => {
   if (search.type === "Player") {
     const result = await dbAccess.findPlayers(search)
 
-    if (!result.players) {
+    if (result.players.length === 0) {
       return res.status(404).json({ status: "error", title: result.title, text: result.text, players: [], playerMetas: [] })
     }
     else {
@@ -104,13 +105,13 @@ app.post('/saveteam', async (req: Request, res: Response) => {
   console.log(req.body)
   //prep the saveteam object
   console.log("hitting end point")
-  const { team }: { team: Team } = req.body
+  const { team, email }: { team: Team, email: string } = req.body
   if (!req.body) {
     return res.status(404).json({ status: "error", title: "No Team received", text: "" })
   }
   console.log(req.body)
   console.log(team)
-  const result = await dbAccess.saveTeam(team)
+  const result = await dbAccess.saveTeam(team, email)
   const saveTeam: SaveTeamFormat = {
     team_id: team.name,
     team_name: team.name,
@@ -131,6 +132,7 @@ app.post('/saveteam', async (req: Request, res: Response) => {
     player13: team.roster[12]?.PlayerName,
     player14: team.roster[13]?.PlayerName,
     player15: team.roster[14]?.PlayerName,
+    owner: team.owner,
   }
 
   return res.status(200).json({ status: result.status, title: result.title, text: result.text })

@@ -22,8 +22,9 @@ VALUES(
     "v@datanerds",
     "notsecure",
     "DEMO",
-    "Gifted Goats"
+    "Gifted Goats-Vardaan"
   );
+--@block
 INSERT INTO NBA_APP.users (name, email, password, room_id, team_id)
 VALUES(
     "Mridul",

@@ -25,6 +25,8 @@ https://expressjs.com/en/guide/routing.html
 
 # MariaDB/SQL
 
+## Setup 
+
 ### Setting up MariaDB in Docker
 
 [From the MariaDB docs](https://mariadb.com/kb/en/installing-and-using-mariadb-via-docker/)
@@ -70,7 +72,12 @@ Find the IP address:
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadbtest
 ```
 
+## Starting and Stopping the server:
 
+https://mariadb.com/kb/en/systemd/
+
+---
+## Permissions
 
 ### GRANT notes
 `GRANT ALL` examples:

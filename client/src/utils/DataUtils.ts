@@ -1,10 +1,14 @@
-import { User } from "../../../server/types/User";
-import { UserQueryResponse } from "../../../server/types/UserQueryResponse"
-import { PlayerQueryResponse } from "../../../server/types/PlayerQueryResponse";
-import { SaveTeamFormat } from "../../../server/types/SaveTeamFormat"
-import { SQLsearchterm } from "../../../server/types/QueryRequest"
-import { Team } from "../../../server/types/Team";
-import { Player } from "../../../server/types/Player";
+import { User } from "../types/User";
+import { UserQueryResponse } from "../types/UserQueryResponse"
+import { PlayerQueryResponse } from "../types/PlayerQueryResponse";
+import { SaveTeamFormat } from "../types/SaveTeamFormat"
+import { SQLsearchterm } from "../types/QueryRequest"
+import { Team } from "../types/Team";
+import { Player } from "../types/Player";
+export const getTeamID = (team: Team): string => {
+  return team.name + "-" + team.owner
+}
+
 export const tryGetUser = async (
   url: string,
   email: string,
@@ -79,20 +83,23 @@ export const tryFindRoom = async (
   }
 }
 
-export const trySearchDatabase = async (
+export const tryFindPlayer = async (
   url: string,
   search: SQLsearchterm
 )
   : Promise<PlayerQueryResponse> => {
+  const { type, term, comparator, value } = search;
+  console.log(search)
   try {
+    const messageBody = { type: type, term: term, comparator: comparator.toString(), value: value }
+    console.log(messageBody)
     const res = await fetch(url, {
       method: 'Post',
       headers: {
         'Content-type': 'application/json'
       },
-      body: JSON.stringify(search)
+      body: JSON.stringify(messageBody)
     });
-
     return await res.json();
   }
   catch (err) {
@@ -103,7 +110,8 @@ export const trySearchDatabase = async (
 
 export const trySaveTeam = async (
   url: string,
-  team: Team
+  team: Team,
+  email: string,
 ): Promise<{ status: "error" | "success", title: string, text: string }> => {
   try {
     const teamString = JSON.stringify(team)
@@ -113,7 +121,7 @@ export const trySaveTeam = async (
       headers: {
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ "team": team })
+      body: JSON.stringify({ "team": team, "email": email })
     });
     console.log("package away")
     return await res.json();
@@ -160,7 +168,7 @@ export const tryLoadTeamMetadata = async (
     });
 
     const result = await res.json();
-    if (result) {
+    if (result.status = "success") {
       return ({ "status": "success", "title": `Metadata retrieved`, "text": '', metaDatas: result.metaDatas })
     }
     else return ({ "status": "error", "title": `Failed to load team meta data`, "text": `Result was null`, metaDatas: [] })
@@ -190,35 +198,59 @@ export const getAllTeams = async (url: string): Promise<{ status: "error" | "suc
 
 export const collectPlayerNames = (team: SaveTeamFormat): string[] => {
   const playerNames: string[] = [];
-  if (team.player1)
+
+  if (team.player1 && team.player1 != "NULL")
     playerNames.push(team.player1);
-  if (team.player2)
+  if (team.player2 && team.player2 != "NULL")
     playerNames.push(team.player2);
-  if (team.player3)
+  if (team.player3 && team.player3 != "NULL")
     playerNames.push(team.player3);
-  if (team.player4)
+  if (team.player4 && team.player4 != "NULL")
     playerNames.push(team.player4);
-  if (team.player5)
+  if (team.player5 && team.player5 != "NULL")
     playerNames.push(team.player5);
-  if (team.player6)
+  if (team.player6 && team.player6 != "NULL")
     playerNames.push(team.player6);
-  if (team.player7)
+  if (team.player7 && team.player7 != "NULL")
     playerNames.push(team.player7);
-  if (team.player8)
+  if (team.player8 && team.player8 != "NULL")
     playerNames.push(team.player8);
-  if (team.player9)
+  if (team.player9 && team.player9 != "NULL")
     playerNames.push(team.player9);
-  if (team.player10)
+  if (team.player10 && team.player10 != "NULL")
     playerNames.push(team.player10);
-  if (team.player11)
+  if (team.player11 && team.player11 != "NULL")
     playerNames.push(team.player11);
-  if (team.player12)
+  if (team.player12 && team.player12 != "NULL")
     playerNames.push(team.player12);
-  if (team.player13)
+  if (team.player13 && team.player13 != "NULL")
     playerNames.push(team.player13);
-  if (team.player14)
+  if (team.player14 && team.player14 != "NULL")
     playerNames.push(team.player14);
-  if (team.player15)
+  if (team.player15 && team.player15 != "NULL")
     playerNames.push(team.player15);
   return playerNames;
+}
+
+export function currentBudget(team: Team): number {
+  if (team) {
+    let price: number = 0;
+    for (var player of team.roster) {
+      price = price + +player.ContractPrice;
+    }
+    return team.budget - price;
+  }
+  else return 0;
+}
+
+export function currentContractPrices(team: Team): number {
+  if (team) {
+    let price: number = 0
+    for (var player of team.roster) {
+      price = price + +player.ContractPrice
+    }
+
+    return price;
+  }
+  else return 0
 }

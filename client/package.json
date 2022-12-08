@@ -60,5 +60,6 @@
     "@types/plotly.js": "^2.12.9",
     "@types/react-plotly.js": "^2.5.2",
     "react-plotlyjs-ts": "^2.2.2"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }

@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react"
 import { User } from "../../../server/types/User"
-import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack } from "@chakra-ui/react";
+import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Heading, HStack } from "@chakra-ui/react";
 import { useUserContext } from "../contexts/UserContext";
 import { Link, Navigate } from "react-router-dom";
 import { useFantasyTeam } from "../contexts/FantasyTeamContext";
@@ -47,6 +47,8 @@ const LoginScreen: React.FC = () => {
   return (
 
     <Center
+      bg={"blackAlpha.800"}
+      padding={10}
       height={"80vh"}
       alignContent={"center"}>
       {renderRedirect()}
@@ -54,9 +56,10 @@ const LoginScreen: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <Stack
           spacing={"15px"}>
-          <Text>
-            Sign In
-          </Text>
+          <Heading
+            color={"white"}>
+            Have an account? Sign In
+          </Heading>
           <Input
             placeholder="Email"
             type="email"
@@ -73,19 +76,33 @@ const LoginScreen: React.FC = () => {
             value={password}
             onChange={handleChange}
           />
-          <ButtonGroup>
-            <Button type="submit">Sign In</Button>
-            <Button type="button" onClick={resetFormFields}>Clear</Button>
-            <Link to="/signupPage">
-              <Button>
-                Sign up
-              </Button>
-            </Link>
+          <ButtonGroup
+            colorScheme={"orange"}
+            justifyContent={"center"}
+            width={"100%"}>
+            <Button
+              w={"33%"}
+              type="submit">Sign In</Button>
+            <Button
+              w={"33%"}
+              type="button" onClick={resetFormFields}>Clear</Button>
+
           </ButtonGroup>
+          <Link
+            to="/signupPage"
+          >
+            <Text
+              textDecor={"underline"}
+              color="white"
+              fontSize={"1rem"}
+              fontWeight={"black"}
+            >Haven't made an account? Sign up here!</Text>
+
+          </Link>
         </Stack>
       </form>
 
-    </Center>);
+    </Center >);
 }
 
 export default LoginScreen

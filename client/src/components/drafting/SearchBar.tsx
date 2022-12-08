@@ -1,13 +1,14 @@
 import { Alert, Button, HStack, Input, Stack } from "@chakra-ui/react"
 import { BsSearch } from "react-icons/bs"
 import { useState, FormEvent } from "react"
-import { SQLsearchterm } from "../../../../server/types/QueryRequest"
+import { Comparator, SQLsearchterm } from "../../types/QueryRequest"
 import { useFantasyTeam } from "../../contexts/FantasyTeamContext"
 //TODO throttle requests!
 const SearchBar: React.FC<{
+  type: "Player" | "Team"
   search: (searchTerm: SQLsearchterm) => Promise<void>
 }> = ({
-  search,
+  search, type
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [disabled, setDisabled] = useState<boolean>(false);
@@ -16,10 +17,9 @@ const SearchBar: React.FC<{
     function createSQLSearch(name: string): SQLsearchterm {
       const searchTerm: SQLsearchterm = {
         value: name,
-        type: "Player",
-        //TODO can change comparator later
-        comparator: "includes",
-        term: "PlayerName"
+        type: type, //either player or team name
+        comparator: Comparator.includes,
+        term: type === "Player" ? "PlayerName" : "team_id"
       }
 
       return searchTerm;
@@ -38,7 +38,8 @@ const SearchBar: React.FC<{
         setDisabled(false)
       }
     }
-    return <Stack>
+    return <Stack
+      width={"60%"}>
       {alert ? <Alert
         variant={"subtle"}>
         At least 3 characters required
@@ -49,7 +50,7 @@ const SearchBar: React.FC<{
         <HStack>
           <Input
             bg={"white"}
-            placeholder="Search for a player"
+            placeholder={`Search for a ${type}`}
             disabled={disabled}
             onChange={e => {
               setSearchTerm(e.target.value)

@@ -99,6 +99,5 @@
   ],
   "include": [
     "src",
-    "../client/src/utils/TeamNameGenerator.ts",
   ]
 }

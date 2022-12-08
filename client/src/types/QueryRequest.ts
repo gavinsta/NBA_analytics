@@ -7,7 +7,11 @@ export type SQLsearchterm = {
   /**Any stat or 'PlayerName' */
   term: string,
   /**Query logic. If numeric, use the logical comparators, otherwise search for strings with "includes","startsWith","endsWith" */
-  comparator: ">" | ">=" | "=" | "<=" | "<" | "includes" | "startsWith" | "endsWith",
+  comparator: Comparator,
   /**The search term being used */
   value: string
+}
+
+export enum Comparator {
+  ">" = ">", ">=" = ">=", "=" = "=", "<=" = "<=", "<" = "<", "includes" = "includes", "startsWith" = "startsWith", "endsWith" = "endsWith"
 }

@@ -1,26 +1,35 @@
-import { Box, Icon, Heading, HStack, Text, useToast, Stack } from "@chakra-ui/react"
+import { Button, Icon, Heading, HStack, Text, useToast, Stack, Spacer } from "@chakra-ui/react"
 import PlayerSearchDisplay from "./drafting/PlayerSearchDisplay"
 import SearchBar from "./drafting/SearchBar"
 import { useFantasyTeam } from "../contexts/FantasyTeamContext"
 import Money from "./styled_components/Money"
 import { useState } from "react"
-import { Player } from "../../../server/types/Player"
-import { SQLsearchterm } from "../../../server/types/QueryRequest"
-import { PlayerQueryResponse } from "../../../server/types/PlayerQueryResponse"
-import { trySearchDatabase } from "../utils/DataUtils"
+import { Player } from "../types/Player"
+import { SQLsearchterm } from "../types/QueryRequest"
+import { PlayerQueryResponse } from "../types/PlayerQueryResponse"
+import { tryFindPlayer } from "../utils/DataUtils"
 import { useAppContext } from "../contexts/AppContext"
 import { MdPersonSearch } from "react-icons/md"
+import { currentBudget } from "../utils/DataUtils"
+import IconHeader from "./styled_components/IconHeader"
+import SearchPlayerByStat from "./drafting/SearchPlayerByStat"
+import { type } from "os"
 const PlayerSearchView = () => {
-  const { currentBudget, team, addPlayer, viewPlayer, checkAvailability } = useFantasyTeam();
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const { team, addPlayer, viewPlayer, checkAvailability } = useFantasyTeam();
   const [queriedPlayers, setQueriedPlayers] = useState<Player[]>([])
   const [queriedPlayerMetas, setQueriedPlayerMetas] = useState<Player[]>([])
   const { URL } = useAppContext();
+
   const toast = useToast();
   const submitSearch = async (search: SQLsearchterm) => {
+    console.log("Searching! ")
 
-    const res: PlayerQueryResponse = await trySearchDatabase(
+    console.log(search)
+    const res: PlayerQueryResponse = await tryFindPlayer(
       URL + "/search", search
     )
+    console.log(res)
     if (res.status === "error") {
       toast({
         status: "error",
@@ -53,41 +62,43 @@ const PlayerSearchView = () => {
 
   return (
     <Stack>
-      <HStack>
-        <Icon
-          as={MdPersonSearch}
-          color="white"
-          bg="black"
-          padding={2}
-          borderRadius={25}
-          w={20}
-          h={20}
-        />
-        <Heading
-        >
-          Search for players
-        </Heading> </HStack>
-
-      <SearchBar
-        search={submitSearch} />
-      <PlayerSearchDisplay
-        queriedPlayers={queriedPlayers}
-        checkAvailability={checkAvailability}
-        addPlayer={(player: Player) => {
-          addPlayer(player, findPlayerMeta(player))
+      <IconHeader
+        setCollapsed={() => {
+          setCollapsed(collapsed ? false : true);
         }}
-        viewPlayer={viewPlayer}
+        icon={MdPersonSearch}
+        headerText={`Search For Players`}
+        collapsed={collapsed}
       />
-      <HStack>
-        <HStack
+      {collapsed ? <></> : <>
 
-          padding={2}
-          fontSize={20}>
-          <Money
-            label={"Budget: "}
-            value={currentBudget()} />
+        <HStack>
+          <SearchBar
+            search={submitSearch}
+            type="Player" />
+          <SearchPlayerByStat
+            search={submitSearch} />
         </HStack>
-      </HStack>
+        <PlayerSearchDisplay
+          queriedPlayers={queriedPlayers}
+          checkAvailability={checkAvailability}
+          addPlayer={(player: Player) => {
+            addPlayer(player, findPlayerMeta(player))
+          }}
+          viewPlayer={viewPlayer}
+        />
+        <HStack>
+          <HStack
+
+            padding={2}
+            fontSize={20}>
+            {team ?
+              <Money
+                label={"Budget: "}
+                value={currentBudget(team)} /> : <></>}
+          </HStack>
+        </HStack>
+      </>}
     </Stack>
 
   )

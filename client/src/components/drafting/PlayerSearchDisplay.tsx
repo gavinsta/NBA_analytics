@@ -44,13 +44,23 @@ const PlayerSearchDisplay: React.FC<{
         viewPlayer={viewPlayer}
         statusText={getStatusText(checkAvailability(player))}
         status={getStatus(checkAvailability(player))}
-        key="{player}"
+        key={player.PlayerName}
         player={player}
       />
     })
   }
 
   return <Stack
+    borderRadius={20}
+    boxShadow={"2xl"}
+    borderColor={"orange.600"}
+
+    backgroundPosition="top"
+    backgroundAttachment={"fixed"}
+    padding={2}
+    maxH={"500px"}
+    overflowY={"scroll"}
+    alignContent={"center"}
     width={'100%'}
     maxHeight={'300px'}
     overflow={"scroll"}
