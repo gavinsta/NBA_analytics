@@ -9,15 +9,41 @@ https://stackoverflow.com/questions/6313126/how-do-i-remove-a-directory-from-a-g
 React Cheat Sheet:
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/
 
+Pathmapping: https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping
+
 ## Front-end
+
+Background gradient: 
+`bgImage="linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url('Background.jpg')"`
+
+Color Swatch and Theme creation: https://smart-swatch.netlify.app/#F7EDE2
+
+Calendar component: https://codesandbox.io/s/white-breeze-rer8g2?file=/src/Calendar.js
+
+Framer-motion animation:
+- Tutorial: https://eliaslog.pw/framer-motion-start-animation-hover/
 
 Chakra:
 https://chakra-ui.com/docs/components/button
 
+NBA API: https://www.npmjs.com/package/nba-api-client
+
+Hexmap Creation: 
+- https://naughty-neumann-fb4b06.netlify.app/player/lebron
+- https://github.com/yuriihorodnyi21/NBA-Stas-Dashboard/blob/main/src/components/ShotCharts.js
 ## Server-side
+
+
 
 ExpressJS reference:
 https://expressjs.com/en/guide/routing.html
+
+# Server
+
+To kill a Node.js process:
+```
+lsof -i tcp:3000
+```
 
 # Future explorations
 
@@ -91,7 +117,7 @@ grant all privileges on DATABASE_NAME.* TO 'USER_NAME'@'%' identified by 'PASSWO
 
 For `'app'`:
 ```sql
-grant select,insert,update on NBA_APP.users to 'app'@'%'
+grant select,insert,update on NBA_APP.users to 'app'@'localhost'
 ```
 ### CREATE user notes
 ```sql
