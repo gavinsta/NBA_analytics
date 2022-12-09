@@ -1,7 +1,7 @@
 import { Alert, Box, Button, ButtonGroup, Heading, HStack, Stack, Text, List, useStatStyles, Icon, Spacer, Tooltip, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from "@chakra-ui/react";
 import { IconType } from "react-icons/lib";
 import { useRef, useState } from "react";
-import { Player } from "../../../../server/types/Player";
+import { Player } from "../../types/Player";
 import { useFantasyTeam } from "../../contexts/FantasyTeamContext";
 import PlayerStatsDisplay from "../PlayerStatsDisplay";
 //import background from "src/backgrounds/basketball_players_silhouette.jpeg"

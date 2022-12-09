@@ -9,7 +9,7 @@ import {
 
   ButtonProps as ChakraButtonProps, forwardRef, HStack, Stack, Spacer, Text, ButtonGroup, Icon, Tooltip, Alert, Container
 } from "@chakra-ui/react";
-import { Player } from "../../../../server/types/Player";
+import { Player } from "../../types/Player";
 import { useFantasyTeam } from "../../contexts/FantasyTeamContext";
 import { AiOutlineUserAdd } from "react-icons/ai"
 import { GiMoneyStack } from "react-icons/gi";

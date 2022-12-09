@@ -45,12 +45,13 @@ export function randomGameStats(p: Player, m: Player, checks: boolean): GameOutc
   }
   var PTS = sim(p.PTS, m.PTS)
   var PTS_diff = PTS - (TwoP * 2 + ThreeP * 3 + FT)
-  if (checks && PTS_diff != 0) {
+  if (checks && PTS_diff !== 0) {
     //TODO create some method to resolve this difference
   }
 
   var simGS = sim(p.GS, m.GS)
   var GS: 1 | 0 = 0
+  // eslint-disable-next-line
   if (simGS != 0 && simGS != 1) {
     if (simGS > 1) GS = 1
     if (simGS < 0) GS = 0

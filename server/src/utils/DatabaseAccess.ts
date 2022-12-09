@@ -13,7 +13,7 @@ let port = 3306
 if (process.env.DB_PORT) {
   port = parseInt(process.env.DB_PORT)
 }
-const PLAYER_TABLE = "playerstats_contracts_22_23"
+const PLAYER_TABLE = "playerStats_contracts_22_23"
 const pool = mariadb.createPool({
   //In production we will use the docker container address
   host: process.env.DB_HOST,
@@ -125,7 +125,6 @@ export async function createUser(newUser: User): Promise<UserQueryResponse> {
   return res;
 }
 function createQueryStringFromSearchTerm(searchTerm: SQLsearchterm, stat: "avg" | "std"): string {
-  const PLAYER_TABLE = "playerstats_contracts_22_23"
   //TODO add the TEAM table to MariaDB
   const TEAM_TABLE = ""
   let query = "SELECT * FROM "
@@ -489,9 +488,10 @@ export async function getTeam(team_id: string): Promise<{ status: string, title:
           let sqlList = "("
           for (const prop in teamFormat) {
             if (prop.startsWith("player")) {
-              const val = teamFormat[prop as keyof typeof teamFormat];
+              const val = teamFormat[prop as keyof SaveTeamFormat];
               if (val && val != "NULL") {
-                sqlList += "'" + val + "'" + ","
+                const coerced: string = val.toString().replace("'", "\'");
+                sqlList += "'" + coerced + "'" + ","
               }
             }
           }

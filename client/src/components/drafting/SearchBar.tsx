@@ -2,7 +2,6 @@ import { Alert, Button, HStack, Input, Stack } from "@chakra-ui/react"
 import { BsSearch } from "react-icons/bs"
 import { useState, FormEvent } from "react"
 import { Comparator, SQLsearchterm } from "../../types/QueryRequest"
-import { useFantasyTeam } from "../../contexts/FantasyTeamContext"
 //TODO throttle requests!
 const SearchBar: React.FC<{
   type: "Player" | "Team"

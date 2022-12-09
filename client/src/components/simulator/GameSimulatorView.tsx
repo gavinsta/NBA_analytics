@@ -16,12 +16,12 @@ import { adjustGameOutcomeByMP, predictNegativePoints, predictPositivePoints, ra
 import { useFantasyTeam } from "../../contexts/FantasyTeamContext";
 import Court from "../Court";
 import { BsPlayCircle } from "react-icons/bs"
-import { Team } from "../../../../server/types/Team";
-import { GameOutcome } from "../../../../server/types/GameOutcome";
+import { Team } from "../../types/Team";
+import { GameOutcome } from "../../types/GameOutcome";
 import AllTeamsDisplay from "../team_components/AllTeamsDisplay";
-import { SaveTeamFormat } from "../../../../server/types/SaveTeamFormat";
+import { SaveTeamFormat } from "../../types/SaveTeamFormat";
 import { collectPlayerNames, currentBudget, currentContractPrices, getTeamID, tryLoadTeam, tryLoadTeamMetadata } from "../../utils/DataUtils";
-import { Player } from "../../../../server/types/Player";
+import { Player } from "../../types/Player";
 import GameOutcomeDisplay from "./GameOutcomeDisplay";
 import Money from "../styled_components/Money";
 const GameSimulatorView: React.FC = () => {

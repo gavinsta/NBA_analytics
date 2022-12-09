@@ -165,7 +165,7 @@ export const tryLoadTeamMetadata = async (
     });
 
     const result = await res.json();
-    if (result.status = "success") {
+    if (result.status == "success") {
       return ({ "status": "success", "title": `Metadata retrieved`, "text": '', metaDatas: result.metaDatas })
     }
     else return ({ "status": "error", "title": `Failed to load team meta data`, "text": `Result was null`, metaDatas: [] })
@@ -196,35 +196,35 @@ export const getAllTeams = async (): Promise<{ status: "error" | "success", titl
 export const collectPlayerNames = (team: SaveTeamFormat): string[] => {
   const playerNames: string[] = [];
 
-  if (team.player1 && team.player1 != "NULL")
+  if (team.player1 && team.player1 !== "NULL")
     playerNames.push(team.player1);
-  if (team.player2 && team.player2 != "NULL")
+  if (team.player2 && team.player2 !== "NULL")
     playerNames.push(team.player2);
-  if (team.player3 && team.player3 != "NULL")
+  if (team.player3 && team.player3 !== "NULL")
     playerNames.push(team.player3);
-  if (team.player4 && team.player4 != "NULL")
+  if (team.player4 && team.player4 !== "NULL")
     playerNames.push(team.player4);
-  if (team.player5 && team.player5 != "NULL")
+  if (team.player5 && team.player5 !== "NULL")
     playerNames.push(team.player5);
-  if (team.player6 && team.player6 != "NULL")
+  if (team.player6 && team.player6 !== "NULL")
     playerNames.push(team.player6);
-  if (team.player7 && team.player7 != "NULL")
+  if (team.player7 && team.player7 !== "NULL")
     playerNames.push(team.player7);
-  if (team.player8 && team.player8 != "NULL")
+  if (team.player8 && team.player8 !== "NULL")
     playerNames.push(team.player8);
-  if (team.player9 && team.player9 != "NULL")
+  if (team.player9 && team.player9 !== "NULL")
     playerNames.push(team.player9);
-  if (team.player10 && team.player10 != "NULL")
+  if (team.player10 && team.player10 !== "NULL")
     playerNames.push(team.player10);
-  if (team.player11 && team.player11 != "NULL")
+  if (team.player11 && team.player11 !== "NULL")
     playerNames.push(team.player11);
-  if (team.player12 && team.player12 != "NULL")
+  if (team.player12 && team.player12 !== "NULL")
     playerNames.push(team.player12);
-  if (team.player13 && team.player13 != "NULL")
+  if (team.player13 && team.player13 !== "NULL")
     playerNames.push(team.player13);
-  if (team.player14 && team.player14 != "NULL")
+  if (team.player14 && team.player14 !== "NULL")
     playerNames.push(team.player14);
-  if (team.player15 && team.player15 != "NULL")
+  if (team.player15 && team.player15 !== "NULL")
     playerNames.push(team.player15);
   return playerNames;
 }

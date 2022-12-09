@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react"
-import { User } from "../../../server/types/User"
+import { User } from "../types/User"
 import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Alert, AlertIcon, Heading, HStack } from "@chakra-ui/react";
 import { useUserContext } from "../contexts/UserContext";
 import { Navigate } from "react-router-dom";

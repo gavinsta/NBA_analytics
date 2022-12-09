@@ -4,7 +4,7 @@ import React from "react";
 import Plotly from "react-plotly.js"
 import Plot from "react-plotly.js"
 import { useFantasyTeam } from "../contexts/FantasyTeamContext";
-import { Player } from "../../../server/types/Player";
+import { Player } from "../types/Player";
 const StatisticsView: React.FC = () => {
   const { team, playerMetas } = useFantasyTeam();
   //const handleClick = (evt: any) => alert('click')
