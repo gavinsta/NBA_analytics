@@ -1,4 +1,4 @@
-import { Alert, Box, Button, ButtonGroup, Heading, HStack, Stack, Text, List, useStatStyles, Icon, Spacer, Tooltip, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from "@chakra-ui/react";
+import { Alert, Box, Button, ButtonGroup, Heading, HStack, Stack, Text, List, useStatStyles, Icon, Spacer, Tooltip, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, useToast } from "@chakra-ui/react";
 import { IconType } from "react-icons/lib";
 import { useRef, useState } from "react";
 import { Player } from "../../types/Player";
@@ -60,6 +60,7 @@ const RosterView: React.FC = () => {
       collapsed={collapsed}
     />
     {collapsed ? <></> : <>
+
       {team && team.roster.length > 10 ? <Alert
         variant={"solid"}
         status={"warning"}>While it's possible to have up to 15 players per NBA team, we suggest a maximum of ten for the simulations!</Alert> : <></>}

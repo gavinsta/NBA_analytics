@@ -102,3 +102,5 @@ VALUES (
     "Vardaan"
   );
 --@block Add a win/loss column.
+ALTER TABLE teams
+ADD winloss float default 0

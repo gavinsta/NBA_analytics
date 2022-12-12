@@ -1,4 +1,4 @@
-import { Tab, Tabs, TabList, TabPanels, TabPanel, Text, Icon, Spacer, Tooltip } from '@chakra-ui/react'
+import { Tab, Tabs, TabList, TabPanels, TabPanel, Text, Icon, Spacer, Tooltip, useToast } from '@chakra-ui/react'
 import TeamView from '../components/TeamView'
 import StatisticsView from '../components/StatisticsView'
 import { Navigate } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { ImStatsDots } from "react-icons/im"
 import GameSimulatorView from '../components/simulator/GameSimulatorView'
 export default function MainSimulatorPage() {
   const { user } = useUserContext();
+  const toast = useToast();
   return (
     <>
       {!user ? <Navigate to={"/loginPage"} /> : <></>}
@@ -23,7 +24,18 @@ export default function MainSimulatorPage() {
         >
           <Tab
             _hover={{ background: "orange", color: "white" }}
-            fontWeight={"bold"}>
+            fontWeight={"bold"}
+            onClick={() => {
+              toast({
+                duration: null,
+                status: "info",
+                title: "Draft 10 players!",
+                description: "Remember to save your team when you're ready!",
+                isClosable: true,
+                position: "top-right"
+              })
+            }}
+          >
             <JerseyIcon
               w={10}
               h={10}
@@ -51,7 +63,9 @@ export default function MainSimulatorPage() {
             </Tab></Tooltip>
           <Tab
             _hover={{ background: "orange", color: "white" }}
-            fontWeight={"bold"}>
+            fontWeight={"bold"}
+
+          >
             <Icon
               as={BsPlayCircle}
               w={10}

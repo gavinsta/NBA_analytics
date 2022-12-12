@@ -1,4 +1,5 @@
 import { Box, Button, Container, Grid, GridItem, Heading, HStack, Spacer, Stack, Text } from "@chakra-ui/react"
+import { motion } from "framer-motion"
 import { useState } from "react"
 import { GameOutcome } from "../../../../server/types/GameOutcome"
 import { currentBudget } from "../../utils/DataUtils"
@@ -95,11 +96,11 @@ const GameOutcomeDisplay = ({
       plays: []
     }
     return (<Stack>
-
+      {absoluteValues("Points", teamOutcome.PTS)}
       {percentageValues("Two Pointers", teamOutcome.TwoP, teamOutcome.TwoPA)}
       {percentageValues("Three Pointers", teamOutcome.ThreeP, teamOutcome.ThreePA)}
       {percentageValues("Free Throws", teamOutcome.FT, teamOutcome.FTA)}
-      {absoluteValues("Points", teamOutcome.PTS)}
+
       {absoluteValues("Point Discrepancy", teamOutcome.PTS_diff)}
       {absoluteValues("Minutes Played", teamOutcome.MP)}
       {absoluteValues("Blocks", teamOutcome.BLK)}
@@ -109,16 +110,50 @@ const GameOutcomeDisplay = ({
 
     </Stack>)
   }
+
+  function getWinningTeamName(): string {
+    const userScore = userOutcomes.reduce((partialSum, a) => partialSum + a.PTS, 0)
+    const opponentScore = opponentOutcomes.reduce((partialSum, a) => partialSum + a.PTS, 0)
+    if (userScore > opponentScore) return userTeamName;
+    else return opponentTeamName;
+  }
   return (
     <Container
+      alignSelf={"center"}
+      justifyContent={"center"}
       boxShadow={"2xl"}
       maxWidth={"1000px"}>
       <Court />
+      <motion.div
+        initial={{ y: "-100px" }}
+        animate={{
+          scale: [.5, 1.5],
+          transition: {
+            type: "spring",
+            damping: 10,
+            mass: 0.75,
+            stiffness: 0,
+            repeat: Infinity,
+            repeatType: "mirror"
+          }
+        }}
+      >
+        <Heading
+          color={"black"}
+          textShadow={"2xl"}
+
+          fontSize={100}
+          textAlign={"center"}>
+          {getWinningTeamName()} WIN!
+        </Heading>
+      </motion.div>
+      <Heading textAlign={"center"}
+        fontFamily={"Open Sans"}>Game Breakdown below</Heading>
       <Grid templateColumns='repeat(2,1fr)'
         gap={5}>
         <GridItem
           alignContent={"center"}>
-          <Heading
+          <Heading fontSize={40}
             textAlign={"center"}>
             {userTeamName}
           </Heading>
@@ -128,6 +163,7 @@ const GameOutcomeDisplay = ({
         <GridItem
           alignContent={"center"}>
           <Heading
+            fontSize={40}
             textAlign={"center"}
           >{opponentTeamName}
           </Heading>

@@ -115,16 +115,22 @@ app.post('/search', async (req: Request, res: Response) => {
     }
   }
 })
-
+app.post('/saverecord', async (req: Request, res: Response) => {
+  if (!req.body) {
+    return res.status(404).json({ status: "error", title: "No Team received", text: "" })
+  }
+  const { teamWon, teamLost } = req.body;
+  await dbAccess.updateTeamScore("teamWon", true);
+  await dbAccess.updateTeamScore("teamLost", false);
+});
 app.post('/saveteam', async (req: Request, res: Response) => {
   console.log(req.body)
   //prep the saveteam object
-  console.log("hitting end point")
+  //console.log("hitting end point")
   const { team, email }: { team: Team, email: string } = req.body
   if (!req.body) {
     return res.status(404).json({ status: "error", title: "No Team received", text: "" })
   }
-  console.log(req.body)
   if (req.body.email === undefined) {
     console.error("THERE IS NO EMAIL")
   }
@@ -150,8 +156,8 @@ app.post('/saveteam', async (req: Request, res: Response) => {
     player14: team.roster[13]?.PlayerName,
     player15: team.roster[14]?.PlayerName,
     owner: team.owner,
-    wins: 0,
-    losses: 0,
+    losses: 0, wins: 0,
+    winloss: 0,
   }
 
   return res.status(200).json({ status: result.status, title: result.title, text: result.text })

@@ -21,4 +21,5 @@ export type SaveTeamFormat = {
   owner: string,
   wins: number,
   losses: number,
+  winloss: number,
 }

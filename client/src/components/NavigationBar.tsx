@@ -22,7 +22,7 @@ const NavigationBar = () => {
     {user?.role == "admin" ? <AdminControls /> : <></>}
     <Spacer />
     <Text fontFamily={"mono"}>
-      Version 1.1
+      Version 1.2
     </Text>
     <Spacer />
 

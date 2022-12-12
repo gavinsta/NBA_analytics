@@ -66,19 +66,56 @@ const GameSimulatorView: React.FC = () => {
         const firstRunOpponent = simulateGameResultsForTeam(oppTeam);
         const userMPfactor = 1 / ((firstRunUser.reduce((partialSum, a) => partialSum + a.MP, 0)) / 240);
         const opponentMPfactor = 1 / ((firstRunOpponent.reduce((partialSum, a) => partialSum + a.MP, 0)) / 240);
-        setUserOutcomes(firstRunUser.map((outcome) => adjustGameOutcomeByMP(outcome, userMPfactor)));
-        setOpponentOutcomes(firstRunOpponent.map((outcome) => adjustGameOutcomeByMP(outcome, opponentMPfactor)));
 
 
+        const userAdjusted = firstRunUser.map((outcome) => adjustGameOutcomeByMP(outcome, userMPfactor));
+        setUserOutcomes(userAdjusted);
+        const opponentAdjusted = firstRunOpponent.map((outcome) => adjustGameOutcomeByMP(outcome, opponentMPfactor));
+
+        setOpponentOutcomes(opponentAdjusted);
+
+        let userFinalScore = userAdjusted.reduce((partialSum, a) => partialSum + a.PTS, 0);
+        let opponentFinalScore = opponentAdjusted.reduce((partialSum, a) => partialSum + a.PTS, 0)
+        if (userFinalScore == opponentFinalScore) {
+          Math.random() >= 0.5 ? userAdjusted[0].TwoP = userAdjusted[0].TwoP + 1 : opponentAdjusted[0].TwoP = opponentAdjusted[0].TwoP + 1
+        }
+
+        userFinalScore = userAdjusted.reduce((partialSum, a) => partialSum + a.PTS, 0);
+        opponentFinalScore = opponentAdjusted.reduce((partialSum, a) => partialSum + a.PTS, 0)
+
+        const teamWon = userFinalScore > opponentFinalScore ? getTeamID(team) : getTeamID(oppTeam)
+        const teamLost = userFinalScore < opponentFinalScore ? getTeamID(team) : getTeamID(oppTeam)
+        try {
+          const res = await fetch("/saverecord", {
+            method: 'Post',
+            headers: {
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify({ teamWon: teamWon, teamLost: teamLost })
+          });
+          const resJson = await res.json();
+          toast({
+            status: "success",
+            title: resJson.title,
+            description: resJson.text,
+
+          })
+        }
+        catch (err) {
+          console.log(err)
+          toast({ "status": "error", "title": `Failed to load team`, "description": `${err}` })
+        }
       }
-      else {
-        toast({
-          position: "top-left",
-          status: "error",
-          title: `Your team or opponent team is missing data!`,
-          description: `This is probably an error on our end...`
-        })
-      }
+    }
+
+    else {
+      toast({
+        position: "top-left",
+        status: "error",
+        title: `Your team or opponent team is missing data!`,
+        description: `This is probably an error on our end...`
+      })
+
     }
   }
 
@@ -244,8 +281,12 @@ const GameSimulatorView: React.FC = () => {
               </AlertDialogOverlay>
             </AlertDialog>
           </ButtonGroup>
-          {team ? <Money label={`${team?.name} Expenses`} value={team ? currentContractPrices(team) : 0} /> : <></>}
-          {opponentTeam ? <Money label={`${opponentTeam?.name} Expenses`} value={opponentTeam ? currentContractPrices(opponentTeam) : 0} /> : <></>}
+          <HStack
+            justifyContent={"center"}>
+            {team ? <Money label={`${team?.name} Expenses`} value={team ? currentContractPrices(team) : 0} /> : <></>}
+            {opponentTeam ? <Money label={`${opponentTeam?.name} Expenses`} value={opponentTeam ? currentContractPrices(opponentTeam) : 0} /> : <></>}
+          </HStack>
+
           {userOutcomes.length > 0 && opponentOutcomes.length > 0 ?
             <GameOutcomeDisplay
               userTeamName={team ? team.name : ""}

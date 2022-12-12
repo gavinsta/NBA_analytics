@@ -253,6 +253,7 @@ const BoxMuellerPlot = () => {
         {
           x: sampleData,
           type: 'histogram',
+
         }
       ]}
       layout={{ title: 'Example of Box Mueller Transformation' }}

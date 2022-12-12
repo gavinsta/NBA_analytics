@@ -38,7 +38,7 @@ const SearchBar: React.FC<{
       }
     }
     return <Stack
-      width={"60%"}>
+      width={"50%"}>
       {alert ? <Alert
         variant={"subtle"}>
         At least 3 characters required
@@ -57,6 +57,7 @@ const SearchBar: React.FC<{
           </Input>
 
           <Button
+            width={"110px"}
             color={"white"}
             bg={"#ff9933"}
             disabled={disabled}

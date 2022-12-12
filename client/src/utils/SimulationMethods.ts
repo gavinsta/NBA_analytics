@@ -37,24 +37,27 @@ export function simulateNegCap(team: Team) {
 export function randomGameStats(p: Player, m: Player, checks: boolean): GameOutcome {
 
   function sim(mean: number, std: number) {
-    return Math.round(rand_bm(mean - std * 3, mean + std * 3, 1))
+    return Math.round(randomSkewNormal(Math.random, mean, std, 0))
   }
   //free throws
-  var FT = sim(p.FT, m.FT)
-  var FTA = sim(p.FTA, m.FTA)
+  var FT = Math.round(randomSkewNormal(Math.random, p.FT, m.FT, 0))
+  if (checks && FT < 0) {
+    FT = 0
+  }
+  var FTA = Math.round(randomSkewNormal(Math.random, p.FTA, m.FTA, 0))
   if (checks && FT > FTA) {
     //check free throws
     FTA = FT
   }
-  var TwoP = sim(p.TwoP, m.TwoP)
-  var TwoPA = sim(p.TwoPA, m.TwoPA)
+  var TwoP = Math.round(randomSkewNormal(Math.random, p.TwoP, m.TwoP, .25))
+  var TwoPA = Math.round(randomSkewNormal(Math.random, p.TwoPA, m.TwoPA, .8))
 
   if (checks && TwoP > TwoPA) {
     //check 2-pointers
     TwoPA = TwoP
   }
-  var ThreeP = sim(p.ThreeP, m.ThreeP)
-  var ThreePA = sim(p.ThreePA, m.ThreePA)
+  var ThreeP = Math.round(randomSkewNormal(Math.random, p.ThreeP, m.ThreeP, .25))
+  var ThreePA = Math.round(randomSkewNormal(Math.random, p.ThreePA, m.ThreePA, .8))
   if (checks && ThreeP > ThreePA) {
     //check threes
     ThreePA = ThreeP

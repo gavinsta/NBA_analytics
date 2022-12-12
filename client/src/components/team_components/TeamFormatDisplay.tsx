@@ -92,6 +92,8 @@ const TeamFormatDisplay = ({ team, selected, selectTeam }: {
   return (
 
     <Stack
+      bg={"blackAlpha.800"}
+      borderRadius={20}
       padding={2}
       boxShadow={"2xl"}>
       <HStack
@@ -99,20 +101,35 @@ const TeamFormatDisplay = ({ team, selected, selectTeam }: {
         padding={2}
         borderRadius={15}>
         <Heading
+          color={"white"}
           fontWeight={selected ? "black" : "300"}
           width={"50%"}>
           {team.team_name}
         </Heading>
         <Spacer />
-        <Text>
-          Owner: {team.owner}
-        </Text>
-        <Text>
-          Wins: {team.wins}
-        </Text>
-        <Text>
-          Losses: {team.losses}
-        </Text>
+        <HStack
+          color={"white"}
+          padding={2}
+          borderRadius={15}
+          fontWeight={"bold"}
+          bg={"orange.600"}>
+          <Text>
+            Owner: {team.owner}
+          </Text>
+          <Spacer />
+          <Text>
+            Wins: {team.wins}
+          </Text>
+          <Spacer />
+          <Text>
+            Losses: {team.losses}
+          </Text>
+          <Spacer />
+          <Text>
+            W/L: {team.winloss}
+          </Text>
+        </HStack>
+
       </HStack>
       <HStack>
         <ButtonGroup>

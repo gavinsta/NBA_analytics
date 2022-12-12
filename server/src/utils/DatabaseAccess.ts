@@ -427,8 +427,8 @@ export async function saveTeam(team: Team, email: string): Promise<{ status: str
       }
     }
     queryArguments.push(team.owner)
-    //Add new records (WINS: 0, LOSSES: 0)
-    queryArguments.push(0, 0)
+    //Add new records (Losses: 0, wins: 0,winloss:0)
+    queryArguments.push(0, 0, 0)
     console.log(`Team Exists:`)
     console.log(queryResults[0].teamExists)
     if (queryResults[0].teamExists == 1) {
@@ -536,6 +536,7 @@ export async function getTeam(team_id: string): Promise<{ status: string, title:
     owner: string,
     losses: number,
     wins: number,
+    winloss: number,
   } | null = null;
   try {
     conn = await fetchConn();
@@ -637,3 +638,40 @@ export async function updateTeamName(team_id: string) {
   //update team and users table
 }
 //newUser.team_id = createTeamName();
+
+export async function updateTeamScore(team_id: string, won: boolean): Promise<{
+  status: "error" | "warning" | "success" | "info",
+  text: string,
+  title: string,
+}> {
+  const res: {
+    status: "error" | "warning" | "success" | "info",
+    text: string,
+    title: string,
+  } = {
+    status: "info",
+    text: "",
+    title: ""
+  }
+  let conn;
+  try {
+    conn = await fetchConn();
+    const winQuery = "UPDATE NBA_APP.teams SET wins = wins + 1 where team_id = ?; UPDATE NBA_APP.teams SET winloss =  CASE when (losses > 0) THEN wins/losses ELSE wins END;"
+    const loseQuery = "UPDATE NBA_APP.teams SET losses = losses + 1 where team_id = ?; UPDATE NBA_APP.teams SET winloss =  CASE when (losses > 0) THEN wins/losses ELSE wins;"
+    //check if the user already exists
+
+    var queryResults = await conn.query(won ? winQuery : loseQuery, [team_id])
+    console.log(queryResults)
+    res.title = "Game record saved"
+
+  }
+  catch (err) {
+    res.status = "error"
+    res.title = "Sorry, updating  record failed!"
+    res.text = `Error from MariaDB: ${err}`
+  }
+  finally {
+    if (conn) conn.end()
+  }
+  return res;
+}

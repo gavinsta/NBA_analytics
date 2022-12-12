@@ -1,5 +1,6 @@
 import { Button, HStack, Input, Select, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { BsSearch } from "react-icons/bs";
 import { Player } from "../../types/Player";
 import { Comparator, SQLsearchterm } from "../../types/QueryRequest";
 const SearchPlayerByStat = ({ search
@@ -22,7 +23,7 @@ const SearchPlayerByStat = ({ search
     return searchTerm;
   }
 
-  return (<HStack >
+  return (<HStack width={"50%"}>
 
     <Select
       width={"25%"}
@@ -74,9 +75,10 @@ const SearchPlayerByStat = ({ search
       defaultValue={0}
     />
     <Button
-      bg={"orange"}
       color={"white"}
-      width={"20%"}
+      bg={"#ff9933"}
+      width={"110px"}
+      leftIcon={<BsSearch />}
       onClick={() => {
         search(createSQLSearch())
       }}>
