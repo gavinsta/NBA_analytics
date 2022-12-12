@@ -656,12 +656,13 @@ export async function updateTeamScore(team_id: string, won: boolean): Promise<{
   let conn;
   try {
     conn = await fetchConn();
-    const winQuery = "UPDATE NBA_APP.teams SET wins = wins + 1 where team_id = ?; UPDATE NBA_APP.teams SET winloss =  CASE when (losses > 0) THEN wins/losses ELSE wins END;"
-    const loseQuery = "UPDATE NBA_APP.teams SET losses = losses + 1 where team_id = ?; UPDATE NBA_APP.teams SET winloss =  CASE when (losses > 0) THEN wins/losses ELSE wins;"
+    const winQuery = "UPDATE NBA_APP.teams SET wins = wins + 1 where team_id = ?;"
+    const loseQuery = "UPDATE NBA_APP.teams SET losses = losses + 1 where team_id = ?;"
     //check if the user already exists
 
     var queryResults = await conn.query(won ? winQuery : loseQuery, [team_id])
     console.log(queryResults)
+    var saveRecordResults = await conn.query("UPDATE NBA_APP.teams SET winloss =  CASE when (losses > 0) THEN wins/losses ELSE wins;")
     res.title = "Game record saved"
 
   }

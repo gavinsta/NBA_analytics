@@ -50,6 +50,9 @@ export function randomGameStats(p: Player, m: Player, checks: boolean): GameOutc
     FTA = FT
   }
   var TwoP = Math.round(randomSkewNormal(Math.random, p.TwoP, m.TwoP, .25))
+  if (TwoP < 0) {
+    TwoP = 0
+  }
   var TwoPA = Math.round(randomSkewNormal(Math.random, p.TwoPA, m.TwoPA, .8))
 
   if (checks && TwoP > TwoPA) {
@@ -57,6 +60,9 @@ export function randomGameStats(p: Player, m: Player, checks: boolean): GameOutc
     TwoPA = TwoP
   }
   var ThreeP = Math.round(randomSkewNormal(Math.random, p.ThreeP, m.ThreeP, .25))
+  if (ThreeP < 0) {
+    ThreeP = 0
+  }
   var ThreePA = Math.round(randomSkewNormal(Math.random, p.ThreePA, m.ThreePA, .8))
   if (checks && ThreeP > ThreePA) {
     //check threes

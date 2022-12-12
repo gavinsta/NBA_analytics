@@ -261,6 +261,7 @@ function ShowIndividualOutcomes(outcome: GameOutcome) {
       {percentageValues("Two Pointers", outcome.TwoP, outcome.TwoPA)}
       {percentageValues("Three Pointers", outcome.ThreeP, outcome.ThreePA)}
       {percentageValues("Free Throws", outcome.FT, outcome.FTA)}
+      {absoluteValues("Assists", outcome.AST)}
       {absoluteValues("Blocks", outcome.BLK)}
       {absoluteValues("Steals", outcome.STL)}
       {absoluteValues("Personal Fouls", outcome.PF)}

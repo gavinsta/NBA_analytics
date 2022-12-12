@@ -119,9 +119,10 @@ app.post('/saverecord', async (req: Request, res: Response) => {
   if (!req.body) {
     return res.status(404).json({ status: "error", title: "No Team received", text: "" })
   }
+  console.log("Saving record")
   const { teamWon, teamLost } = req.body;
-  await dbAccess.updateTeamScore("teamWon", true);
-  await dbAccess.updateTeamScore("teamLost", false);
+  await dbAccess.updateTeamScore(teamWon, true);
+  await dbAccess.updateTeamScore(teamLost, false);
 });
 app.post('/saveteam', async (req: Request, res: Response) => {
   console.log(req.body)
