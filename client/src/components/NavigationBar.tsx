@@ -6,13 +6,12 @@ import AdminControls from "./AdminControls";
 import { AiOutlineUser } from "react-icons/ai";
 const NavigationBar = () => {
   const { user } = useUserContext();
-  const { playerMetas } = useFantasyTeam();
   return (<HStack
     color={"white"}
     bg="blackAlpha.800"
     pl={2}
     pr={2}>
-    <ButtonGroup>
+    <ButtonGroup variant={"ghost"}>
       <Link to="/home">
         <Button
           colorScheme={"whiteAlpha"}>
@@ -20,9 +19,11 @@ const NavigationBar = () => {
         </Button>
       </Link>
     </ButtonGroup>
-    <AdminControls />
+    {user?.role == "admin" ? <AdminControls /> : <></>}
     <Spacer />
-
+    <Text fontFamily={"mono"}>
+      Version 1.1
+    </Text>
     <Spacer />
 
 

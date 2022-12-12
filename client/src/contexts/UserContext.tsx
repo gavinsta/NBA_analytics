@@ -14,7 +14,6 @@ interface ContextType {
   inRoom: boolean
 }
 
-const URL = "http://localhost:8080"
 export const UserContext = createContext<ContextType>({
   user: null,
   login: async () => { return null },

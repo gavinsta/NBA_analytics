@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react"
 import { User } from "../types/User"
-import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Alert, AlertIcon, Heading, HStack } from "@chakra-ui/react";
+import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Alert, AlertIcon, Heading, HStack, FormControl, FormErrorMessage, FormHelperText, FormLabel } from "@chakra-ui/react";
 import { useUserContext } from "../contexts/UserContext";
 import { Navigate } from "react-router-dom";
 const defaultFormFields = {
@@ -15,6 +15,8 @@ const SignupScreen: React.FC = () => {
   // react hooks
   const [formFields, setFormFields] = useState(defaultFormFields)
   const { name, email, password, confirm_password } = formFields
+  const [matchpwAlert, setMatchpwAlert] = useState<boolean>(false);
+  const [pwLengthAlert, setpwLengthAlert] = useState<boolean>(false);
   const toast = useToast();
   const resetFormFields = () => {
     return (
@@ -35,15 +37,13 @@ const SignupScreen: React.FC = () => {
       password: password,
       room_id: null,
       team_id: null,
+      role: "NULL"
     }
-    if (formFields.confirm_password !== formFields.password) {
-      toast({
-        status: "error",
-        title: "Passwords must match",
-        description: "Try again",
-        variant: "subtle",
-        position: "top"
-      })
+    if (formFields.password.length < 5) {
+      setpwLengthAlert(true);
+    }
+    else if (formFields.confirm_password !== formFields.password) {
+      setMatchpwAlert(true);
     }
     else await createNewUser(tempUser)
   }
@@ -61,7 +61,8 @@ const SignupScreen: React.FC = () => {
       {renderRedirect()}
 
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}
+        color="white">
         <Stack
           color={"white"}
           w={"100%"}
@@ -69,49 +70,85 @@ const SignupScreen: React.FC = () => {
           <Heading color={"white"}>
             Sign up and create your dream team
           </Heading>
-          <Input
+          <FormControl
+            color={"white"}
+            bgColor={"#383434"} variant="floating" id="email" isRequired
 
-            placeholder="Name"
-            type="name"
-            required
-            name="name"
-            value={name}
-            onChange={handleChange}
-          />
-          <Input
-
-            placeholder="Email"
-            type="email"
-            required
-            name="email"
-            value={email}
-            onChange={handleChange}
-          />
-          <Input
-
-            placeholder="Password"
-            type='password'
-            required
-            name='password'
-            value={password}
-            onChange={handleChange}
-          />
-          {formFields.confirm_password !== formFields.password ? <Alert
-            status='warning'
-            variant={"subtle"}
           >
-            <AlertIcon />
-            Passwords don't match!
-          </Alert> : <></>}
-          <Input
+            <Input placeholder="Email"
+              type="email"
+              required
+              name="email"
+              value={email}
+              onChange={handleChange} />
+            {/* It is important that the Label comes after the Control due to css selectors */}
+            <FormLabel>Email</FormLabel>
+            <FormHelperText color={"white"}>Please input your email (or anything with an @ sign)</FormHelperText>
+            <FormErrorMessage>Invalid Email</FormErrorMessage>
+          </FormControl>
+          <FormControl
+            color={"white"}
+            bgColor={"#383434"} variant="floating" id="email" isRequired
 
-            placeholder="Confirm Password"
-            type='password'
-            required
-            name='confirm_password'
-            value={confirm_password}
-            onChange={handleChange}
-          />
+          >
+            <Input
+
+              placeholder="Name"
+              type="name"
+              required
+              name="name"
+              value={name}
+              onChange={handleChange}
+            />
+
+            {/* It is important that the Label comes after the Control due to css selectors */}
+            <FormLabel>Public Username</FormLabel>
+            <FormHelperText color={"white"}>Keep it very short and sweet!</FormHelperText>
+            <FormErrorMessage>Invalid Username</FormErrorMessage>
+          </FormControl>
+          <FormControl
+            color={"white"}
+            bgColor={"#383434"} variant="floating" id="email" isRequired
+
+          >
+            {pwLengthAlert ? <Alert
+              status='error'
+              variant={"subtle"}
+            >
+              <AlertIcon />
+              Password is too short!
+            </Alert> : <></>}
+            <Input
+
+              placeholder="Password"
+              type='password'
+              required
+              name='password'
+              value={password}
+              onChange={handleChange}
+            />
+            {matchpwAlert ?
+              <Alert
+                status='error'
+                variant={"subtle"}
+              >
+                <AlertIcon />
+                Passwords don't match!
+              </Alert> : <></>}
+            <Input
+
+              placeholder="Confirm Password"
+              type='password'
+              required
+              name='confirm_password'
+              value={confirm_password}
+              onChange={handleChange}
+            />
+            {/* It is important that the Label comes after the Control due to css selectors */}
+            <FormLabel>Password</FormLabel>
+            <FormHelperText color={"white"}>WARNING: This site is just a demo, as such your password is NOT SECURE. </FormHelperText>
+            <FormErrorMessage>Invalid Email</FormErrorMessage>
+          </FormControl>
           <HStack
             justifyContent={"center"}
 

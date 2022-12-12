@@ -19,4 +19,6 @@ export type SaveTeamFormat = {
   player14: string | null,
   player15: string | null,
   owner: string,
+  wins: number,
+  losses: number,
 }

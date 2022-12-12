@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from "express"
 import dotenv from "dotenv";
 import path from "path";
 import cors from "cors";
-import { User } from "../types/User"
 import { Team } from "../types/Team"
 import * as dbAccess from "./utils/DatabaseAccess"
 import { SQLsearchterm } from "../types/QueryRequest";
@@ -53,9 +52,9 @@ app.post('/login', async (req: Request, res: Response) => {
 });
 
 app.post('/signup', async (req: Request, res: Response) => {
-  const newUser: User = req.body;
+  const newUser: { name: string, email: string, password: string, role: string, room_id: string, team_id: string } = req.body;
   console.log(`Trying to add ${newUser.name} at ${newUser.email}`);
-
+  newUser.role = "NULL"
   const result = await dbAccess.createUser(newUser);
   if (!result.user) {
     return res.status(404).json({ status: "error", title: result.title, text: result.text, user: null })
@@ -105,7 +104,16 @@ app.post('/search', async (req: Request, res: Response) => {
       return res.status(200).json({ status: "success", title: result.title, text: result.text, players: result.players, playerMetas: result.playerMetas })
     }
   }
-  //TODO add in team search
+  else if (search.type === "Team") {
+    console.log(`Searching for ${search.type} where team_id == ${search.value} `)
+    const result = await dbAccess.findTeam(search)
+    if (result.teams.length === 0) {
+      return res.status(404).json({ status: "error", title: result.title, text: result.text, teams: [] })
+    }
+    else {
+      return res.status(200).json({ status: "success", title: result.title, text: result.text, teams: result.teams })
+    }
+  }
 })
 
 app.post('/saveteam', async (req: Request, res: Response) => {
@@ -142,6 +150,8 @@ app.post('/saveteam', async (req: Request, res: Response) => {
     player14: team.roster[13]?.PlayerName,
     player15: team.roster[14]?.PlayerName,
     owner: team.owner,
+    wins: 0,
+    losses: 0,
   }
 
   return res.status(200).json({ status: result.status, title: result.title, text: result.text })
@@ -160,17 +170,7 @@ app.post('/loadteam', async (req: Request, res: Response) => {
   return res.status(200).json({ status: result.status, title: result.title, text: result.text, team: result.team })
 })
 
-app.post('/loadteammetadata', async (req: Request, res: Response) => {
-  //prep the saveteam object
-  if (!req.body) {
-    return res.status(404).json({ status: "error", title: "No Team received", text: "" })
-  }
-  const { team_id } = req.body;
-  console.log(team_id)
-  const result = await dbAccess.getTeamMetaData(team_id)
 
-  return res.status(200).json({ status: result.status, title: result.title, text: result.text, metaDatas: result.metaDatas })
-})
 app.get('/allteams', async (req: Request, res: Response) => {
   const result = await dbAccess.getTeams();
   if (result.status == "success") {
@@ -178,6 +178,8 @@ app.get('/allteams', async (req: Request, res: Response) => {
   }
   else return res.status(404).json({ status: "error", title: "Error communicating with server", text: "Maybe server is down?", teams: null })
 })
+
+
 app.listen(PORT, () => {
   console.log("Listening on port: " + PORT);
 });

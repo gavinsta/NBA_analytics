@@ -1,5 +1,6 @@
 import { Player } from "../types/Player"
 import { GameOutcome } from "../types/GameOutcome"
+import { Team } from "../types/Team"
 export function predictPositivePoints(player: Player): number {
   const { MP, ThreeP, TwoP, DRB, AST, TOV } = player
   const val = 1.182965 + 0.164520 * MP + 1.058200 * ThreeP + 0.393399 * TwoP + 1.085329 * DRB + 1.486653 * AST - 0.411815 * TOV + 0.058070 * DRB * AST - 0.131127 * ThreeP * TOV - 0.043513 * MP * AST - 0.033444 * MP * DRB
@@ -10,6 +11,21 @@ export function predictNegativePoints(player: Player): number {
   const { GS, MP, ThreePA, TwoP, TwoPA, DRB, AST, BLK, TOV, ThreeP } = player
   const val = -2.957266 - 4.356233 * GS - 0.271290 * MP - 0.179994 * ThreePA + 0.399125 * TwoP - 0.906246 * TwoPA + 0.412483 * DRB + 0.161072 * AST + 0.035350 * BLK - 0.382476 * TOV + 0.239528 * GS * MP - 0.575765 * GS * TwoPA - 0.300584 * DRB * GS + 0.033754 * MP * TwoPA - 0.050902 * AST * ThreeP + 0.098252 * ThreePA * BLK
   return Math.round(val)
+}
+
+
+export function simulatePosCap(team: Team) {
+  const pp = team?.roster.map((player) => {
+    return { player: player.PlayerName, value: predictPositivePoints(player) }
+  })
+  return pp
+}
+
+export function simulateNegCap(team: Team) {
+  const pp = team?.roster.map((player) => {
+    return { player: player.PlayerName, value: predictNegativePoints(player) }
+  })
+  return pp
 }
 /**
  * 
@@ -117,6 +133,25 @@ function rand_bm(min: number, max: number, skew: number) {
   return num
 }
 
+const randomNormals = (rng: () => number) => {
+  let u1 = 0, u2 = 0;
+  //Convert [0,1) to (0,1)
+  while (u1 === 0) u1 = rng();
+  while (u2 === 0) u2 = rng();
+  const R = Math.sqrt(-2.0 * Math.log(u1));
+  const Θ = 2.0 * Math.PI * u2;
+  return [R * Math.cos(Θ), R * Math.sin(Θ)];
+};
+export const randomSkewNormal = (rng: () => number, mean: number, std: number, skew: number) => {
+  const [u0, v] = randomNormals(rng);
+  if (skew === 0) {
+    return mean + std * u0;
+  }
+  const coeff = skew / Math.sqrt(1 + skew * skew);
+  const u1 = coeff * u0 + Math.sqrt(1 - coeff * coeff) * v;
+  const z = u0 >= 0 ? u1 : -u1;
+  return mean + std * z;
+};
 export const adjustGameOutcomeByMP = (gameOutcome: GameOutcome, adjust: number): GameOutcome => {
   var ORB = Math.floor(gameOutcome.ORB * adjust)
   var DRB = Math.floor(gameOutcome.DRB * adjust)

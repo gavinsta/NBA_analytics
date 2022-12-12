@@ -1,12 +1,14 @@
-import { Box, Button, ButtonGroup, Center, Container, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Center, Container, Grid, GridItem, Heading, HStack, NumberInput, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
 import PlotlyChart from "react-plotly.js"
-import React from "react";
+import React, { useState } from "react";
 import Plotly from "react-plotly.js"
 import Plot from "react-plotly.js"
 import { useFantasyTeam } from "../contexts/FantasyTeamContext";
 import { Player } from "../types/Player";
+import { randomSkewNormal } from "../utils/SimulationMethods";
+import SliderInput from "./styled_components/NumberSlider";
 const StatisticsView: React.FC = () => {
-  const { team, playerMetas } = useFantasyTeam();
+  const { team } = useFantasyTeam();
   //const handleClick = (evt: any) => alert('click')
   //const handleHover = (evt: any) => alert('hover')
 
@@ -118,50 +120,145 @@ const StatisticsView: React.FC = () => {
   }
 
   return <>
-    {team ? <Box width={'100%'}>
-      {genDataTeam(team.roster, playerMetas, "TwoP", "Two Pointers", "TwoPA")}
-      {genDataTeam(team.roster, playerMetas, "ThreeP", "Three Pointers", "ThreePA")}
-      {genDataTeam(team.roster, playerMetas, "FT", "Free Throws", "FTA")}
-      {genDataTeam(team.roster, playerMetas, "BLK", "Blocks")}
-      {genDataTeam(team.roster, playerMetas, "STL", "Steals")}
-      {genDataTeam(team.roster, playerMetas, "DRB", "Defensive Rebounds")}
-      {genDataTeam(team.roster, playerMetas, "ORB", "Offensive")}
-    </Box> : <Container
-      h={"70vh"}
-    >
-      <Center
+    {team ?
+      <Tabs>
+        <TabList>
+          <Tab>
+            Team Data
+          </Tab>
+          <Tab>
+            More about the Statistics...
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Box width={'100%'}>
+              {genDataTeam(team.roster, team.rosterMetaData, "TwoP", "Two Pointers", "TwoPA")}
+              {genDataTeam(team.roster, team.rosterMetaData, "ThreeP", "Three Pointers", "ThreePA")}
+              {genDataTeam(team.roster, team.rosterMetaData, "FT", "Free Throws", "FTA")}
+              {genDataTeam(team.roster, team.rosterMetaData, "BLK", "Blocks")}
+              {genDataTeam(team.roster, team.rosterMetaData, "STL", "Steals")}
+              {genDataTeam(team.roster, team.rosterMetaData, "DRB", "Defensive Rebounds")}
+              {genDataTeam(team.roster, team.rosterMetaData, "ORB", "Offensive")}
+            </Box>
 
-        h={"100%"}>
-        <Stack
-          padding={10}
-          bg={"blackAlpha.800"}
-          textAlign={"center"}
-          color={"white"}>
-          <Heading>No stats here!</Heading>
-          <Text >Make a team first!</Text>
-        </Stack>
+          </TabPanel>
+          <TabPanel>
+            <BoxMuellerPlot />
+          </TabPanel>
+        </TabPanels>
 
-      </Center>
-    </Container>}
+      </Tabs>
+      : <Container
+        h={"70vh"}
+      >
+        <Center
+
+          h={"100%"}>
+          <Stack
+            padding={10}
+            bg={"blackAlpha.800"}
+            textAlign={"center"}
+            color={"white"}>
+            <Heading>No stats here!</Heading>
+            <Text >Make a team first!</Text>
+          </Stack>
+
+        </Center>
+      </Container>}
 
   </>
 }
 
-const TestPlot = () => {
-  return (
+const BoxMuellerPlot = () => {
+  const [mean, setMean] = useState<number>(0);
+  const [std, setStd] = useState<number>(1);
+  const [skew, setSkew] = useState<number>(0);
+  const [iterations, setIterations] = useState<number>(10);
+  const [sampleData, setSampleData] = useState<number[]>([]);
+  function generateData(): number[] {
+    const dist: number[] = []
+    for (var i = 0; i < iterations; i++) {
+      dist.push(randomSkewNormal(Math.random, mean, std, skew))
+    }
+    return dist
+  }
+  return (<>
+    <Heading>
+      Box Mueller Transformation:
+    </Heading>
+    <Grid
+      templateRows='repeat(4, 1fr)'
+      templateColumns='repeat(3, 1fr)'>
+      <GridItem colSpan={1}>
+        <Text>
+          Mean:
+        </Text>
+      </GridItem>
+      <GridItem
+        colSpan={2}>
+        <SliderInput
+          max={20}
+          value={mean}
+          setValue={setMean}
+        />
+      </GridItem>
+      <GridItem colSpan={1}>
+        <Text>
+          Standard Deviation:
+        </Text>
+      </GridItem>
+      <GridItem colSpan={2}>
+        <SliderInput
+          value={std}
+          setValue={setStd}
+        />
+      </GridItem>
+      <GridItem colSpan={1}>
+        <Text>
+          Skew:
+        </Text>
+      </GridItem>
+      <GridItem colSpan={2}>
+        <SliderInput
+          value={skew}
+          setValue={setSkew}
+        />
+      </GridItem>
+      <GridItem colSpan={1}>
+        <Text>Iterations:</Text>
+      </GridItem>
+      <GridItem colSpan={2}>
+        <SliderInput
+          value={iterations}
+          setValue={setIterations}
+          max={100000}
+        />
+      </GridItem>
+    </Grid>
+    <Stack>
+
+
+
+
+      <Button
+        onClick={() => {
+          setSampleData(generateData())
+        }}>
+        Plot
+      </Button>
+    </Stack>
     <PlotlyChart
       data={[
         {
-          x: [1, 2, 3],
-          y: [2, 6, 3],
-          type: 'scatter',
-          mode: 'lines+markers',
-          marker: { color: 'red' },
-        },
-        { type: 'bar', x: [1, 2, 3], y: [2, 5, 3] },
+          x: sampleData,
+          type: 'histogram',
+        }
       ]}
-      layout={{ title: 'A Fancy Plot' }}
-    />);
+      layout={{ title: 'Example of Box Mueller Transformation' }}
+    />
+  </>);
+
 }
 
 export default StatisticsView;

@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react"
-import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Heading, HStack } from "@chakra-ui/react";
+import { Input, Box, Button, useToast, Text, Center, ButtonGroup, Stack, Heading, HStack, FormControl, FormLabel, FormHelperText, FormErrorMessage } from "@chakra-ui/react";
 import { useUserContext } from "../contexts/UserContext";
 import { Link, Navigate } from "react-router-dom";
 import { useFantasyTeam } from "../contexts/FantasyTeamContext";
@@ -46,13 +46,15 @@ const LoginScreen: React.FC = () => {
   return (
 
     <Center
-      bg={"blackAlpha.800"}
+      bg={"#383434"}
       padding={10}
       height={"80vh"}
       alignContent={"center"}>
       {renderRedirect()}
 
       <form onSubmit={handleSubmit}>
+
+
         <Stack
           color={"white"}
           spacing={"15px"}>
@@ -60,22 +62,37 @@ const LoginScreen: React.FC = () => {
             color={"white"}>
             Have an account? Sign In
           </Heading>
-          <Input
-            placeholder="Email"
-            type="email"
-            required
-            name="email"
-            value={email}
-            onChange={handleChange}
-          />
-          <Input
-            placeholder="Password"
-            type='password'
-            required
-            name='password'
-            value={password}
-            onChange={handleChange}
-          />
+          <FormControl
+            color={"white"}
+            bgColor={"#383434"} variant="floating" id="email" isRequired
+
+          >
+            <Input placeholder="Email"
+              type="email"
+              required
+              name="email"
+              value={email}
+              onChange={handleChange} />
+            {/* It is important that the Label comes after the Control due to css selectors */}
+            <FormLabel>Email</FormLabel>
+            <FormErrorMessage>Invalid Email</FormErrorMessage>
+          </FormControl>
+          <FormControl
+            color={"white"}
+            bgColor={"#383434"} variant="floating" id="password" isRequired>
+            <Input
+              placeholder="Password"
+              type='password'
+              required
+              name='password'
+              value={password}
+              onChange={handleChange}
+            />
+            {/* It is important that the Label comes after the Control due to css selectors */}
+            <FormLabel>Password</FormLabel>
+            <FormErrorMessage>Invalid Password</FormErrorMessage>
+          </FormControl>
+
           <ButtonGroup
             colorScheme={"orange"}
             justifyContent={"center"}

@@ -84,7 +84,7 @@ LOAD DATA LOCAL INFILE '/Users/gavinlau/Documents/MDSA/DATA604/Sports-Analytics-
   `2027-28`,
   Guaranteed
 );
---@block join player stats to player contracts as a VIEW for easy access
+--@block join player stats to player contracts as a VIEW for easy access 
 CREATE OR REPLACE VIEW NBA_APP.playerStats_contracts_22_23 AS
 SELECT A.*,
   B.`2022-23` as 'ContractPrice'
@@ -99,4 +99,33 @@ WHERE email = "g@datanerds"
 --@block reset v
 UPDATE NBA_APP.users
 SET room_id = "DEMO"
-WHERE email = "v@datanerds"
+WHERE email = "v@datanerds";
+--@block add admin column
+ALTER TABLE teams
+ADD losses int default 0;
+ALTER TABLE teams
+ADD wins int default 0;
+--@block
+DELETE FROM teams
+where owner = "Gavin" --@block
+ALTER TABLE users
+ADD role VARCHAR(10) default NULL;
+--@block set G, M, P and V to admin
+UPDATE users
+SET role = "admin"
+WHERE email in (
+    "g@datanerds",
+    "p@datanerds",
+    "v@datanerds",
+    "m@datanerds"
+  );
+--@block remove G's team
+UPDATE users
+set team_id = NULL
+where email = "g@datanerds";
+--@block remove team
+DELETE FROM NBA_APP.teams
+where owner = "Gavin" --@block remove team_id
+UPDATE NBA_APP.users
+set team_id = NULL
+where email = "g@datanerds"

@@ -54,10 +54,6 @@ To kill a Node.js process:
 lsof -i tcp:3000
 ```
 
-# Future explorations
-
-- Honeybadger.io
-
 # Docker 
 
 ## Accessing
@@ -198,6 +194,9 @@ LOAD DATA LOCAL INFILE '/Users/gavinlau/Documents/MDSA/DATA604/NBA_app/basketbal
   Player_additional
 );
 ```
+## Import/Export data
+
+https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb
 
 ## `NBA_APP` database managment
 
@@ -240,36 +239,6 @@ https://www.section.io/engineering-education/getting-started-with-mariadb-using-
 # Simulation and Math notes
 [Box Mueller transformation for simulating player values in Javascript](https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve)
 
-# Additional stuff
+# Future explorations
 
-Comments on each column of the data
-```sql
-COMMENT ON Rk IS "Rank",
-COMMENT = "Position",
-COMMENT = "Team",
-COMMENT = "Games",
-COMMENT = "Games Started",
-COMMENT = "Minutes Played",
-COMMENT = "Field Goals Per Game",
-COMMENT = "Field Goal Attempts Per Game",
-COMMENT = "Field Goal Percentage",
-COMMENT = "3-Point Field Goals Per Game",
- COMMENT = "3-Point Field Goals Attempted Per Game",
-  COMMENT = "3-Point Field Goal Percentage",
-  COMMENT = "2-Point Field Goals Per Game",
-  COMMENT = "2-Point Field Goals Attempted Per Game",
-  COMMENT = "2-Point Field Goal Percentage",
-  COMMENT = "Effective Field Goal Percentage",
-  COMMENT = "Free Throws Per Game",
-  COMMENT = "Free Throw Attempts Per Game",
-  COMMENT = "Free Throw Percentage",
-  COMMENT = "Offensive Rebounds Per Game",
-  COMMENT = "Defensive Rebounds Per Game",
-  COMMENT = "Total Rebounds Per Game",
-  COMMENT = "Assists Per Game",
-  COMMENT = "Steals Per Game",
-  COMMENT = "Blocks Per Game",
-  COMMENT = "Turnovers Per Game",
-  COMMENT = "Personal Fouls Per Game",
-  COMMENT = "Points Per Game",
-```
+- Honeybadger.io

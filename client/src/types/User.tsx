@@ -4,4 +4,5 @@ export type User = {
   password: string,
   room_id: string | null,
   team_id: string | null,
+  role: string
 }

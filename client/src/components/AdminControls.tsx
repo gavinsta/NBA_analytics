@@ -4,7 +4,7 @@ import { useUserContext } from "../contexts/UserContext";
 
 const AdminControls = () => {
   const { user } = useUserContext();
-  const { playerMetas } = useFantasyTeam();
+  const { team } = useFantasyTeam();
   return (
     <>{user ? <>
       <Text>
@@ -28,7 +28,7 @@ const AdminControls = () => {
         <Button
           onClick={
             () => {
-              console.log(playerMetas)
+              console.log(team)
             }
           }>
           View metadata

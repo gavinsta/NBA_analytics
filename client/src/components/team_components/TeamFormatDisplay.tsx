@@ -6,7 +6,7 @@ import {
   Heading, HStack, Spacer, Stack, Text, Tooltip, useDisclosure
 } from "@chakra-ui/react"
 import { useRef } from "react"
-import { SaveTeamFormat } from "../../../../server/types/SaveTeamFormat"
+import { SaveTeamFormat } from "../../types/SaveTeamFormat"
 import { useFantasyTeam } from "../../contexts/FantasyTeamContext"
 import { collectPlayerNames } from "../../utils/DataUtils"
 import Money from "../styled_components/Money"
@@ -108,10 +108,10 @@ const TeamFormatDisplay = ({ team, selected, selectTeam }: {
           Owner: {team.owner}
         </Text>
         <Text>
-          Wins:
+          Wins: {team.wins}
         </Text>
         <Text>
-          Losses:
+          Losses: {team.losses}
         </Text>
       </HStack>
       <HStack>

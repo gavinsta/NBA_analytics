@@ -4,7 +4,7 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  Box, Button, ButtonGroup, Center, Icon, Heading, HStack, Stack, Text,
+  Box, Button, ButtonGroup, Icon, Heading, HStack, Stack, Text,
   useDisclosure,
   Container,
   useToast,
@@ -20,21 +20,24 @@ import { Team } from "../../types/Team";
 import { GameOutcome } from "../../types/GameOutcome";
 import AllTeamsDisplay from "../team_components/AllTeamsDisplay";
 import { SaveTeamFormat } from "../../types/SaveTeamFormat";
-import { collectPlayerNames, currentBudget, currentContractPrices, getTeamID, tryLoadTeam, tryLoadTeamMetadata } from "../../utils/DataUtils";
+import { collectPlayerNames, currentBudget, currentContractPrices, getTeamID, tryLoadTeam } from "../../utils/DataUtils";
 import { Player } from "../../types/Player";
 import GameOutcomeDisplay from "./GameOutcomeDisplay";
 import Money from "../styled_components/Money";
+import IconHeader from "../styled_components/IconHeader";
 const GameSimulatorView: React.FC = () => {
   //const [PP, setPP] = useState();
   //const [NP, setNP] = useState();
   const [userOutcomes, setUserOutcomes] = useState<GameOutcome[]>([]);
-  const [opponentTeam, setOpponentTeam] = useState<Team | null>();
+  const [opponentTeam, setOpponentTeam] = useState<Team | null>(null);
   const [opponentTeamFormat, setOpponentTeamFormat] = useState<SaveTeamFormat | null>(null);
   const [opponentOutcomes, setOpponentOutcomes] = useState<GameOutcome[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { team, playerMetas } = useFantasyTeam();
+  const { team } = useFantasyTeam();
   const [isThrottled, setThrottled] = useState<boolean>(false);
   const [secondsWaiting, setSecondsWaiting] = useState(0);
+  const [collapsed, setCollapsed] = useState<boolean>(true);
+  const [predictedValues, setPredictedValues] = useState<{ key: string, value: number }[]>([])
   useEffect(() => {
     let myInterval = setInterval(() => {
       if (secondsWaiting > 0) {
@@ -53,44 +56,37 @@ const GameSimulatorView: React.FC = () => {
 
   const toast = useToast();
   const cancelRef = useRef<HTMLButtonElement>(null)
-  function simulatePos() {
-    const pp = team?.roster.map((player) => {
-      return <Text>{player.PlayerName}: {predictPositivePoints(player)}</Text>
-    })
-    return pp
-  }
-  function simulateNeg() {
-    const pp = team?.roster.map((player) => {
-      return <Text>{player.PlayerName}: {predictNegativePoints(player)}</Text>
-    })
-    return pp
-  }
 
   async function simulateGameResults() {
-    if (opponentTeamFormat && team) {
-      const opponentData = await loadOpponentTeam(opponentTeamFormat);
-      const firstRunUser = simulateGameResultsForTeam(team, playerMetas);
-      const firstRunOpponent = simulateGameResultsForTeam(opponentData.team, opponentData.metas);
-      const userMPfactor = 1 / ((firstRunUser.reduce((partialSum, a) => partialSum + a.MP, 0)) / 240);
-      const opponentMPfactor = 1 / ((firstRunOpponent.reduce((partialSum, a) => partialSum + a.MP, 0)) / 240);
-      setUserOutcomes(firstRunUser.map((outcome) => adjustGameOutcomeByMP(outcome, userMPfactor)));
-      setOpponentOutcomes(firstRunOpponent.map((outcome) => adjustGameOutcomeByMP(outcome, opponentMPfactor)));
-    }
-    else {
-      toast({
-        position: "top-left",
-        status: "error",
-        title: `Your team or opponent team is missing data!`,
-        description: `This is probably an error on our end...`
-      })
+    if (opponentTeamFormat) {
+      const oppTeam = await loadOpponentTeam(opponentTeamFormat);
+      setOpponentTeam(oppTeam)
+      if (oppTeam && team) {
+        const firstRunUser = simulateGameResultsForTeam(team);
+        const firstRunOpponent = simulateGameResultsForTeam(oppTeam);
+        const userMPfactor = 1 / ((firstRunUser.reduce((partialSum, a) => partialSum + a.MP, 0)) / 240);
+        const opponentMPfactor = 1 / ((firstRunOpponent.reduce((partialSum, a) => partialSum + a.MP, 0)) / 240);
+        setUserOutcomes(firstRunUser.map((outcome) => adjustGameOutcomeByMP(outcome, userMPfactor)));
+        setOpponentOutcomes(firstRunOpponent.map((outcome) => adjustGameOutcomeByMP(outcome, opponentMPfactor)));
+
+
+      }
+      else {
+        toast({
+          position: "top-left",
+          status: "error",
+          title: `Your team or opponent team is missing data!`,
+          description: `This is probably an error on our end...`
+        })
+      }
     }
   }
 
-  function simulateGameResultsForTeam(team: Team, metaDatas: Player[]): GameOutcome[] {
+  function simulateGameResultsForTeam(team: Team): GameOutcome[] {
     const outcomes: GameOutcome[] = []
     for (var player of team.roster) {
       let playerMeta;
-      for (var meta of metaDatas) {
+      for (var meta of team.rosterMetaData) {
         if (meta.PlayerName == player.PlayerName) {
           playerMeta = meta;
           break;
@@ -111,11 +107,12 @@ const GameSimulatorView: React.FC = () => {
     return outcomes;
   }
 
+  //TODO add a play by play function
   function playByPlay() {
     const outcomes = team?.roster.map((player) => {
-      for (var i = 0; i < playerMetas.length; i++) {
-        if (playerMetas[i].PlayerName == player.PlayerName) {
-          return <Text>AST: {randomGameStats(player, playerMetas[i], true).AST}</Text>
+      for (var i = 0; i < team.rosterMetaData.length; i++) {
+        if (team.rosterMetaData[i].PlayerName == player.PlayerName) {
+          return <Text>AST: {randomGameStats(player, team.rosterMetaData[i], true).AST}</Text>
         }
       }
     });
@@ -123,16 +120,15 @@ const GameSimulatorView: React.FC = () => {
 
   }
 
-  async function loadOpponentTeam(teamFormat: SaveTeamFormat): Promise<{ team: Team, metas: Player[] }> {
+  async function loadOpponentTeam(teamFormat: SaveTeamFormat): Promise<Team> {
+    console.log(teamFormat.team_id)
     const result = await tryLoadTeam(teamFormat.team_id)
 
     console.log(result.team)
     let team: Team | null = null;
     if (result.team) {
       team = result.team;
-      setOpponentTeam(team);
-      const metas = await loadOpponentTeamMeta(team);
-      return { team, metas }
+      return team;
     }
     toast({
       status: result.status,
@@ -141,17 +137,10 @@ const GameSimulatorView: React.FC = () => {
     });
     throw new Error(`Opponent Team could not be loaded! ${result.text}`)
   }
-  async function loadOpponentTeamMeta(team: Team): Promise<Player[]> {
-    //TODO the meta data here is being retrieved by TEAM NAME not TEAM_ID woops
-    const result = await tryLoadTeamMetadata(getTeamID(team))
-    console.log(result)
-    if (result.status == "success") {
-      return result.metaDatas;
-    }
-    else throw new Error(`Meta data of ${team.name} could not be loaded! ${result.text}`)
-  }
+
   function checkReadyToSimulate(): boolean {
     if (opponentTeamFormat && team) {
+      console.log(team.name)
       return true
     }
     else return false;
@@ -168,91 +157,111 @@ const GameSimulatorView: React.FC = () => {
     return true;
   }
   return (<Box>
+    <AllTeamsDisplay
+      selectTeam={(teamFormat) => {
+        setOpponentTeamFormat(teamFormat)
+        console.log(teamFormat)
+      }} />
     <Stack>
-      <AllTeamsDisplay
-        selectTeam={setOpponentTeamFormat} />
-      <HStack>
-        <Icon
-          as={BsPlayCircle}
-          color="white"
-          bg="black"
-          padding={2}
-          borderRadius={25}
-          w={20}
-          h={20}
-        />
-        <Heading
-        >
-          Game Simulator
-        </Heading> </HStack>
-      <ButtonGroup>
-        <Button
-          disabled={isThrottled}
-          onClick={() => {
-            if (checkReadyToSimulate()) {
-              setThrottled(true)
-              setSecondsWaiting(10)
-              simulateGameResults()
-            }
-            else {
-              toast({
-                status: "warning",
-                title: "Make sure youv'e selected an opponent team"
-              })
-            }
-          }
-          }>
-          {isThrottled ? `Simulate Again in ${secondsWaiting}s` : `Simulate`}
-        </Button>
-        <AlertDialog
-          isOpen={isOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={onClose}
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent
-              bg={"white"}>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                Add Player
-              </AlertDialogHeader>
 
-              <AlertDialogBody>
-                Use your draft pick?
-              </AlertDialogBody>
+      <IconHeader
+        icon={BsPlayCircle}
+        headerText="Game Simulator"
+        collapsed={collapsed}
+        setCollapsed={() => { setCollapsed(collapsed => !collapsed) }}
+      />
+      {collapsed ? <></> :
+        <>
+          <ButtonGroup
+            colorScheme={"whatsapp"}
+            size={"lg"}
+            justifyContent={"center"}>
+            <Button
+              disabled={isThrottled}
+              onClick={() => {
+                if (checkReadyToSimulate()) {
+                  setThrottled(true)
+                  setSecondsWaiting(10)
+                  simulateGameResults()
+                }
+                else {
+                  toast({
+                    status: "warning",
+                    title: "Make sure you've selected an opponent team"
+                  })
+                }
+              }
+              }>
+              {isThrottled ? `Simulate Again in ${secondsWaiting}s` : `Simulate one game`}
+            </Button>
+            <Button
+              disabled={true}
+              onClick={() => {
+                if (checkReadyToSimulate()) {
+                  setThrottled(true)
+                  setSecondsWaiting(10)
+                  //TODO simulateGameResults() for 7 games
+                }
+                else {
+                  toast({
+                    status: "warning",
+                    title: "Make sure youv'e selected an opponent team"
+                  })
+                }
+              }
+              }>
+              {isThrottled ? `Simulate Again in ${secondsWaiting}s` : `Simulate playoff series`}
+            </Button>
+            <AlertDialog
+              isOpen={isOpen}
+              leastDestructiveRef={cancelRef}
+              onClose={onClose}
+            >
+              <AlertDialogOverlay>
+                <AlertDialogContent
+                  bg={"white"}>
+                  <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                    Add Player
+                  </AlertDialogHeader>
 
-              <AlertDialogFooter
-                alignContent={"center"}>
-                <Button ref={cancelRef} onClick={onClose}>
-                  On second thought...
-                </Button>
-                <Button colorScheme='green' onClick={() => {
-                  //TODO add function
-                  onClose()
-                }} ml={3}>
-                  Draft!
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
-      </ButtonGroup>
+                  <AlertDialogBody>
+                    Use your draft pick?
+                  </AlertDialogBody>
+
+                  <AlertDialogFooter
+                    alignContent={"center"}>
+                    <Button ref={cancelRef} onClick={onClose}>
+                      On second thought...
+                    </Button>
+                    <Button colorScheme='green' onClick={() => {
+                      //TODO add function
+                      onClose()
+                    }} ml={3}>
+                      Draft!
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
+          </ButtonGroup>
+          {team ? <Money label={`${team?.name} Expenses`} value={team ? currentContractPrices(team) : 0} /> : <></>}
+          {opponentTeam ? <Money label={`${opponentTeam?.name} Expenses`} value={opponentTeam ? currentContractPrices(opponentTeam) : 0} /> : <></>}
+          {userOutcomes.length > 0 && opponentOutcomes.length > 0 ?
+            <GameOutcomeDisplay
+              userTeamName={team ? team.name : ""}
+              opponentTeamName={opponentTeam ? opponentTeam.name : ""}
+              userOutcomes={userOutcomes}
+              opponentOutcomes={opponentOutcomes}
+            /> : opponentTeamFormat ? <Alert
+              status="info">
+              <AlertIcon /> Simulate when you're ready!
+            </Alert> : <Alert
+              status="warning">
+              <AlertIcon /> You need to make a team and pick an opponent team
+            </Alert>}
+        </>}
+
     </Stack>
-    {team ? <Money label={`${team?.name} Expenses`} value={team ? currentContractPrices(team) : 0} /> : <></>}
-    {opponentTeam ? <Money label={`${opponentTeam?.name} Expenses`} value={opponentTeam ? currentContractPrices(opponentTeam) : 0} /> : <></>}
-    {userOutcomes.length > 0 && opponentOutcomes.length > 0 ?
-      <GameOutcomeDisplay
-        userTeamName={team ? team.name : ""}
-        opponentTeamName={opponentTeam ? opponentTeam.name : ""}
-        userOutcomes={userOutcomes}
-        opponentOutcomes={opponentOutcomes}
-      /> : opponentTeamFormat ? <Alert
-        status="info">
-        <AlertIcon /> Simulate when you're ready!
-      </Alert> : <Alert
-        status="warning">
-        <AlertIcon /> You need to make a team and pick an opponent team
-      </Alert>}
-
   </Box>)
 }
 

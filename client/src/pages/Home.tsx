@@ -16,7 +16,8 @@ const Home: React.FC = () => {
   function roomControls() {
     if (user)
       return (<>{user.room_id ?
-        <ButtonGroup>
+        <ButtonGroup
+          width={"100%"}>
 
           <Tooltip
             label="We're working on this feature!"
@@ -78,13 +79,14 @@ const Home: React.FC = () => {
 
     return (
       <ButtonGroup
-        width={"100%"}
+        padding={0}
         alignSelf={"center"}
         colorScheme={"orange"}
         variant={"solid"}>
         <Stack w={"10em"}>
           {user ?
             <Button
+              width={"100%"}
               onClick={() => {
                 logout();
                 clearTeam();
@@ -173,11 +175,13 @@ const Home: React.FC = () => {
       <Center
         height={"100%"}
         alignContent={"center"}>
-        <Stack>
+        <Stack >
           {renderOptions()}
           {roomControls()}
           {user?.room_id ? <Link to='/simulator' >
-            <Button colorScheme={"green"}>
+            <Button
+              width={"100%"}
+              colorScheme={"green"}>
               Go to the Simulator!
             </Button>
           </Link> : <></>}

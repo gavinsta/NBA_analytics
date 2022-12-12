@@ -91,7 +91,7 @@ export const tryFindPlayer = async (
   console.log(search)
   try {
     const messageBody = { type: type, term: term, comparator: comparator.toString(), value: value }
-    console.log(messageBody)
+
     const res = await fetch("/search", {
       method: 'Post',
       headers: {
@@ -106,7 +106,26 @@ export const tryFindPlayer = async (
     return ({ "status": "error", "title": `Search Failed`, "text": `${err}`, "players": [], "playerMetas": [] })
   }
 }
+export const tryFindTeamFormats = async (search: SQLsearchterm): Promise<{ status: "success" | "error", title: string, text: string, teams: SaveTeamFormat[] }> => {
+  const { type, term, comparator, value } = search;
+  console.log(search)
+  try {
+    const messageBody = { type: type, term: term, comparator: comparator.toString(), value: value }
 
+    const res = await fetch("/search", {
+      method: 'Post',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(messageBody)
+    });
+    return await res.json();
+  }
+  catch (err) {
+    console.log(err)
+    return ({ "status": "error", "title": `Search Failed`, "text": `${err}`, teams: [], })
+  }
+}
 export const trySaveTeam = async (
   team: Team,
   email: string,
@@ -147,32 +166,7 @@ export const tryLoadTeam = async (
   }
   catch (err) {
     console.log(err)
-    return ({ "status": "error", "title": `Failed to save team`, "text": `${err}`, team: null })
-  }
-}
-
-export const tryLoadTeamMetadata = async (
-  team_id: string
-): Promise<{ status: "error" | "success", title: string, text: string, metaDatas: Player[] }> => {
-
-  try {
-    const res = await fetch("/loadteammetadata", {
-      method: 'Post',
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({ team_id })
-    });
-
-    const result = await res.json();
-    if (result.status == "success") {
-      return ({ "status": "success", "title": `Metadata retrieved`, "text": '', metaDatas: result.metaDatas })
-    }
-    else return ({ "status": "error", "title": `Failed to load team meta data`, "text": `Result was null`, metaDatas: [] })
-  }
-  catch (err) {
-    console.log(err)
-    return ({ "status": "error", "title": `Failed to load team meta data`, "text": `${err}`, metaDatas: [] })
+    return ({ "status": "error", "title": `Failed to load team`, "text": `${err}`, team: null })
   }
 }
 
@@ -190,6 +184,23 @@ export const getAllTeams = async (): Promise<{ status: "error" | "success", titl
   catch (err) {
     console.log(err)
     return ({ "status": "error", "title": `Failed to load teams`, "text": `${err}`, teams: [] })
+  }
+}
+
+export const searchTeams = async (): Promise<{ status: "error" | "success", title: string, text: string, teams: SaveTeamFormat[] }> => {
+  try {
+    const res = await fetch("/search", {
+      method: 'Post',
+      headers: {
+        'Content-type': 'application/json'
+      },
+    });
+
+    return await res.json();
+  }
+  catch (err) {
+    console.log(err)
+    return ({ "status": "error", "title": `Failed to load teams searching for `, "text": `${err}`, teams: [] })
   }
 }
 

@@ -3,12 +3,11 @@ import { isMobile } from "react-device-detect";
 import { Player } from "../types/Player"
 import { Team } from "../types/Team"
 import { useToast } from "@chakra-ui/react"
-import { trySaveTeam, tryLoadTeam, tryLoadTeamMetadata } from "../utils/DataUtils"
+import { trySaveTeam, tryLoadTeam } from "../utils/DataUtils"
 import generateTeamName from "../utils/TeamNameGenerator"
 import { useUserContext } from "./UserContext";
 interface ContextType {
   team: Team | null;
-  playerMetas: Player[];
   createNewTeam: (name?: string | null) => void;
   saveTeam: () => void;
   loadTeam: (team_id: string) => Promise<Team | null>;
@@ -24,7 +23,6 @@ interface ContextType {
 
 export const FantasyTeamContext = createContext<ContextType>({
   team: null,
-  playerMetas: [],
   createNewTeam: () => { },
   saveTeam: () => { },
   loadTeam: async () => { return null },
@@ -45,7 +43,6 @@ export const FantasyTeamProvider: React.FC<{
   const { user } = useUserContext();
   const toast = useToast();
   const [budget, setBudget] = useState<number>(0)
-  const [playerMetas, setPlayerMetas] = useState<Player[]>([])
   useEffect(() => {
     const savedTeam = localStorage.getItem("team");
     if (savedTeam) {
@@ -58,6 +55,7 @@ export const FantasyTeamProvider: React.FC<{
       const newTeam: Team = {
         name: name ? name : generateTeamName(),
         roster: [],
+        rosterMetaData: [],
         budget: 140000000,
         year: 2022,
         owner: user ? user.name : "None"
@@ -101,19 +99,12 @@ export const FantasyTeamProvider: React.FC<{
     if (result.team) {
       setTeam(result.team)
       setBudget(result.team.budget)
-
-      const metaResult = await tryLoadTeamMetadata(team_id)
-      if (metaResult.status == "success") {
-        setPlayerMetas(metaResult.metaDatas)
-      }
-
       return result.team
     }
     else return null
   }
   function clearTeam() {
     setTeam(null)
-    setPlayerMetas([])
   }
   function checkBudget(cost: number): boolean {
     if (budget - cost <= 0) {
@@ -145,11 +136,8 @@ export const FantasyTeamProvider: React.FC<{
   }
   function addPlayer(player: Player, meta: Player) {
     if (team) {
-      setTeam({ ...team, roster: [...team.roster, player] })
-      playerMetas.push(meta)
+      setTeam({ ...team, roster: [...team.roster, player], rosterMetaData: [...team.rosterMetaData, meta] })
     }
-    // Prevent item select in mobile
-    //if (isMobile) return;
   }
 
   function removePlayer(player: Player) {
@@ -158,8 +146,8 @@ export const FantasyTeamProvider: React.FC<{
       const index = team.roster.indexOf(player)
       if (index > -1) {
         team.roster.splice(index, 1)
+        team.rosterMetaData.splice(index, 1)
         setTeam({ ...team })
-        playerMetas.splice(index, 1)
       }
     }
   }
@@ -167,7 +155,6 @@ export const FantasyTeamProvider: React.FC<{
     <FantasyTeamContext.Provider
       value={{
         team,
-        playerMetas,
         createNewTeam,
         saveTeam,
         loadTeam,
