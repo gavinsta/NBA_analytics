@@ -128,4 +128,13 @@ DELETE FROM NBA_APP.teams
 where owner = "Gavin" --@block remove team_id
 UPDATE NBA_APP.users
 set team_id = NULL
-where email = "g@datanerds"
+where email = "g@datanerds" --@block
+UPDATE NBA_APP.teams
+SET wins = wins + 1
+where team_id = "Gifted Goats-Vardaan";
+--@block
+UPDATE NBA_APP.teams
+SET winloss = CASE
+    when (losses > 0) THEN wins / losses
+    ELSE wins
+  END;
